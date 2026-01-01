@@ -1,0 +1,109 @@
+:root {
+  --gold: #d4af37;
+  --bg-dark: #12100e;   /* Coklat gelap sangat (bukan hitam pekat) */
+  --bg-light: #f9f5f0;  /* Warna krim/kertas mahal */
+  --text-main: #e0e0e0;
+  --text-muted: #a0a0a0;
+  --glass: rgba(255, 255, 255, 0.03);
+}
+
+body {
+  background-color: var(--bg-dark); /* Lebih lembut di mata */
+  color: var(--text-main);
+  background-image: radial-gradient(circle at top right, #1a1612, #0c0b0a);
+}
+
+.container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+
+.main-footer {
+  background: #0a0a0a;
+  padding: 80px 0 20px;
+  border-top: 1px solid rgba(212, 175, 55, 0.1);
+  color: #fff;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr; /* Desktop: Brand lebar, sisa menu di kanan */
+  gap: 40px;
+}
+
+.footer-logo {
+  font-family: serif;
+  font-size: 1.8rem;
+  letter-spacing: 2px;
+  margin-bottom: 1.5rem;
+}
+
+.footer-desc {
+  color: #888;
+  font-size: 0.9rem;
+  line-height: 1.8;
+  max-width: 400px;
+}
+
+.footer-links-wrapper {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.footer-nav h4, .footer-social h4 {
+  color: var(--gold);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 1.5rem;
+}
+
+.footer-nav ul, .footer-social ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-nav li, .footer-social li {
+  margin-bottom: 12px;
+}
+
+.footer-nav a, .footer-social a {
+  color: #aaa;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: 0.3s;
+}
+
+.footer-nav a:hover, .footer-social a:hover {
+  color: var(--gold);
+  padding-left: 5px;
+}
+
+.footer-bottom {
+  margin-top: 60px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  text-align: center;
+  color: #444;
+  font-size: 0.75rem;
+}
+
+/* --- REVISI MOBILE SINKRON --- */
+@media (max-width: 768px) {
+  .footer-grid {
+    grid-template-columns: 1fr; /* Stack vertikal untuk Brand */
+    gap: 50px;
+  }
+
+  .footer-brand {
+    text-align: center; /* Di mobile brand di tengah agar manis */
+  }
+
+  .footer-desc {
+    margin: 0 auto;
+  }
+
+  .footer-links-wrapper {
+    display: flex; 
+    justify-content: space-around; /* Navigasi & Connect BERDAMPINGAN */
+    text-align: left;
+  }
+}

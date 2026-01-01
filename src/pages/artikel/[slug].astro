@@ -1,0 +1,47 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import { daftarArtikel } from '../../data/artikel.ts';
+import '../../styles/artikel.css';
+
+export async function getStaticPaths() {
+  return daftarArtikel.map((art, index) => ({
+    params: { slug: art.slug },
+    props: { 
+      art, 
+      prev: daftarArtikel[index - 1] || null,
+      next: daftarArtikel[index + 1] || null
+    },
+  }));
+}
+
+const { art, prev, next } = Astro.props;
+---
+
+<MainLayout title={art.judul}>
+  <article class="single-post">
+    <div class="container-small">
+      <header>
+        <span class="gold">{art.kategori}</span>
+        <h1>{art.judul}</h1>
+        <p class="date">{art.tanggal}</p>
+      </header>
+      
+      <img src={art.image} class="featured-image" />
+      
+      <div class="post-body">
+        {art.konten}
+      </div>
+
+      <div class="article-hook">
+        <p>{art.ctaText}</p>
+        <a href="https://wa.me/6285175285640" class="btn-gold">Pesan Lakoffie Sekarang</a>
+      </div>
+
+      <nav class="post-nav">
+        {prev ? <a href={`/artikel/${prev.slug}`}>← {prev.judul}</a> : <span></span>}
+        <a href="/artikel" class="back-home">Beranda Artikel</a>
+        {next ? <a href={`/artikel/${next.slug}`}>{next.judul} →</a> : <span></span>}
+      </nav>
+    </div>
+  </article>
+</MainLayout>

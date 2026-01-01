@@ -1,0 +1,93 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import { daftarMitra } from '../../data/mitra';
+import '../../styles/mitra.css';
+
+// Logic: Ambil wilayah unik dan urutkan sesuai abjad (A-Z)
+const daftarWilayah = [...new Set(daftarMitra.map(m => m.wilayah))].sort();
+---
+
+<MainLayout title="Mitra Lakoffie | Store Locator">
+  <section class="mitra-hero">
+    <div class="container">
+      <h1>Temukan <span class="gold">Lakoffie</span></h1>
+      <p>Pilih wilayah atau cari lokasi terdekat untuk menikmati kemurnian kopi kami.</p>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="wilayah-filter-wrapper">
+      <div class="wilayah-filter">
+        <button class="chip-wilayah active" data-filter="semua">Semua Wilayah</button>
+        {daftarWilayah.map(wilayah => (
+          <button class="chip-wilayah" data-filter={wilayah}>{wilayah}</button>
+        ))}
+      </div>
+    </div>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Cari nama toko atau kecamatan..." />
+      <button id="btnNearby" class="btn-nearby">📍 Cari Terdekat</button>
+    </div>
+
+    <div class="mitra-grid" id="mitraGrid">
+      {daftarMitra.map((m) => (
+        <div class="mitra-card" data-nama={m.nama} data-wilayah={m.wilayah} data-kecamatan={m.kecamatan}>
+          <div class="card-header">
+            <span class="badge-wilayah">{m.wilayah}</span>
+            <img src={m.image} alt={m.nama} loading="lazy" />
+          </div>
+          <div class="card-body">
+            <span class="jenis-tag">{m.jenis}</span>
+            <h3>{m.nama}</h3>
+            <p class="alamat">{m.alamat}</p>
+            <div class="card-footer">
+              <a href={m.gmaps} target="_blank" class="btn-gmaps">G-Maps</a>
+              <a href={`/mitra/${m.id}`} class="btn-detail">Detail Toko</a>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <script>
+    const searchInput = document.getElementById('searchInput') as HTMLInputElement;
+    const chips = document.querySelectorAll('.chip-wilayah');
+    const cards = document.querySelectorAll('.mitra-card') as NodeListOf<HTMLElement>;
+
+    // 1. Fungsi Filter Gabungan
+    function filterMitra() {
+      const activeChip = document.querySelector('.chip-wilayah.active') as HTMLElement;
+      const filterWilayah = activeChip?.dataset.filter || 'semua';
+      const searchText = searchInput.value.toLowerCase();
+
+      cards.forEach(card => {
+        const cardWilayah = card.dataset.wilayah || '';
+        const cardContent = card.innerText.toLowerCase();
+        
+        const matchesWilayah = filterWilayah === 'semua' || cardWilayah === filterWilayah;
+        const matchesSearch = cardContent.includes(searchText);
+
+        if (matchesWilayah && matchesSearch) {
+          card.style.display = 'block';
+          card.style.animation = 'fadeIn 0.4s ease forwards';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // 2. Event Listener untuk Chips
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        chips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        filterMitra();
+      });
+    });
+
+    // 3. Event Listener untuk Search Input
+    searchInput?.addEventListener('input', filterMitra);
+  </script>
+</MainLayout>

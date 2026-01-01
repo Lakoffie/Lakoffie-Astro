@@ -1,0 +1,41 @@
+---
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+// Ambil props untuk SEO
+const { 
+  title = "Lakoffie | Kopi Murni Nusantara",
+  description = "Nikmati kemurnian kopi pilihan langsung dari petani lokal. Lakoffie menghadirkan kopi murni tanpa campuran untuk pecinta kopi sejati.",
+  ogImage = "/og-image.jpg"
+} = Astro.props;
+---
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={Astro.url} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(ogImage, Astro.url)} />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+
+  <body>
+    <Navbar />
+    <main>
+      <slot /> 
+    </main>
+    <Footer />
+    <script>
+      import "../scripts/main.ts";
+    </script>
+  </body>
+</html>

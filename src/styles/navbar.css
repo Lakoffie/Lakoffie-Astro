@@ -1,0 +1,135 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  background: rgba(18, 16, 14, 0.85); /* Beri sedikit ketelusan */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  padding: 1rem 0;
+     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+}
+
+/* Brand Section */
+.brand {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand h1 {
+  font-family: 'Serif', serif;
+  font-size: 1.8rem;
+  letter-spacing: 4px;
+  color: #d4af37; /* Gold */
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.brand span {
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  color: #ffffff;
+  opacity: 0.8;
+  text-transform: lowercase;
+}
+
+/* Links */
+.nav-links {
+  display: flex;
+  gap: 2.5rem;
+  list-style: none;
+  margin: 0;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  transition: 0.3s;
+  text-transform: uppercase;
+}
+
+.nav-links a:hover {
+  color: #d4af37;
+}
+
+/* Mobile Toggle */
+#menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.hamburger {
+  display: block;
+  width: 25px;
+  height: 2px;
+  background: #ffffff;
+  position: relative;
+  transition: 0.3s;
+}
+
+.hamburger::before, .hamburger::after {
+  content: '';
+  width: 25px;
+  height: 2px;
+  background: #ffffff;
+  position: absolute;
+  left: 0;
+  transition: 0.3s;
+}
+
+.hamburger::before { top: -8px; }
+.hamburger::after { top: 8px; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nav-container {
+    justify-content: center; /* Brand di tengah saat mobile */
+  }
+
+  #menu-btn {
+    display: block;
+    position: absolute;
+    left: 1.5rem; /* Tombol menu di kiri */
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    flex-direction: column;
+    background: rgba(15, 15, 15, 0.98);
+    gap: 0;
+    text-align: center;
+    max-height: 0;
+    overflow: hidden;
+    transition: 0.5s ease-in-out;
+  }
+
+  .nav-links.active {
+    max-height: 300px;
+    padding: 2rem 0;
+  }
+
+  .nav-links li {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+}

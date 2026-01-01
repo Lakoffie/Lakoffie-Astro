@@ -1,0 +1,245 @@
+.mitra-page { padding-top: 120px; background: var(--bg-dark); min-height: 100vh; }
+
+.mitra-hero { padding: 120px 0 60px; text-align: center; }
+.gold { color: #d4af37; text-shadow: 0 0 10px rgba(212, 175, 55, 0.3); }
+
+/* Search Box yang Lebih Elegan */
+.search-box {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 4rem;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+#searchInput {
+  flex: 1;
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  outline: none;
+  transition: 0.3s;
+}
+
+#searchInput:focus { border-color: var(--gold); }
+
+.btn-nearby {
+  background: linear-gradient(135deg, #d4af37 0%, #f2d06b 100%);
+  color: #000;
+  border: none;
+  padding: 0 25px; /* Memberi ruang di kanan-kiri ikon */
+  font-weight: 800;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+  min-width: 180px; /* Supaya tidak terlalu kecil di layar lebar */
+}
+
+.btn-nearby:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+  filter: brightness(1.1);
+}
+
+.btn-nearby:active {
+  transform: translateY(0);
+}
+
+/* REVISI 2: Card yang Lebih Terlihat (Glow & Border) */
+.mitra-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2.5rem;
+}
+
+.mitra-card {
+  /* Background gradient mewah agar tidak flat hitam */
+  background: linear-gradient(145deg, #121212, #1a1a1a);
+  border: 1px solid rgba(212, 175, 55, 0.1);
+  border-radius: 15px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.mitra-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--gold);
+  box-shadow: 0 15px 40px rgba(212, 175, 55, 0.15);
+}
+
+.card-header {
+  height: 220px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Teknik Masking agar bawah gambar memudar ke warna card */
+.card-header::after {
+  content: '';
+  position: absolute;
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 101%; /* Sedikit lebih untuk menutupi gap */
+  background: linear-gradient(to bottom, transparent 60%, #121212 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.card-header img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: 0.6s;
+  /* Agar foto tidak terlalu silau, kita samakan filternya dengan artikel */
+  filter: brightness(0.8) contrast(1.1);
+}
+
+.mitra-card:hover .card-header img {
+  transform: scale(1.1);
+  filter: brightness(1);
+}
+/* Badge Wilayah (Glassmorphism Tetap Dipertahankan) */
+.badge-wilayah {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--gold);
+  font-size: 0.65rem;
+  padding: 6px 12px;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 4px;
+  z-index: 2; /* Di atas masking */
+}
+
+
+/* Styling Body Card agar serasi */
+.card-body {
+  padding: 1.5rem 1.8rem 2rem;
+  position: relative;
+}
+
+.card-body h3 {
+  font-family: serif;
+  color: #fff;
+  font-size: 1.4rem;
+  margin: 0.5rem 0;
+}
+
+.jenis-tag {
+  color: var(--gold);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  opacity: 0.8;
+}
+.jenis-tag { color: var(--gold); font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.5rem; display: block; }
+.card-body h3 { font-family: serif; color: #fff; font-size: 1.6rem; margin-bottom: 0.8rem; }
+.alamat { font-size: 0.85rem; color: #888; line-height: 1.6; min-height: 3rem; margin-bottom: 2rem; }
+
+/* REVISI 1 & 3: Tombol G-Maps & Detail */
+.card-footer { 
+  display: flex; 
+  gap: 15px; /* Jarak antar tombol */
+}
+
+.btn-gmaps { 
+  flex: 1; 
+  padding: 12px; 
+  text-align: center; 
+  text-decoration: none; 
+  font-size: 0.75rem; 
+  font-weight: bold;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 6px;
+  transition: 0.3s;
+  background: rgba(255,255,255,0.05);
+}
+
+.btn-gmaps:hover { background: #fff; color: #000; border-color: #fff; }
+
+.btn-detail { 
+  flex: 1; 
+  padding: 12px; 
+  text-align: center; 
+  text-decoration: none; 
+  font-size: 0.75rem; 
+  font-weight: bold;
+  background: var(--gold); 
+  color: #000; 
+  border-radius: 6px;
+  transition: 0.3s;
+}
+
+.btn-detail:hover { transform: scale(1.05); filter: brightness(1.1); }
+@media (max-width: 768px) {
+  .search-box {
+    flex-direction: column; /* Stack vertikal di HP */
+  }
+  .btn-nearby {
+    padding: 15px; /* Lebih besar di HP agar mudah ditekan jari */
+  }
+}
+/* --- WILAYAH CHIPS --- */
+.wilayah-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.chip-wilayah {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  color: #888;
+  padding: 8px 18px;
+  border-radius: 50px; /* Bentuk Pill */
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.chip-wilayah:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.chip-wilayah.active {
+  background: var(--gold);
+  color: black;
+  border-color: var(--gold);
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+@media (max-width: 768px) {
+  .wilayah-filter {
+    justify-content: flex-start; /* Di mobile rata kiri agar bisa di-scroll horizontal */
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 10px;
+  }
+  
+  /* Hilangkan scrollbar tapi tetap bisa di-scroll */
+  .wilayah-filter::-webkit-scrollbar { display: none; }
+}

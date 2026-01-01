@@ -1,0 +1,92 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import '../styles/home.css';
+
+// Data simulasi (nanti bisa dipindah ke file data tersendiri)
+const varianKopi = [
+  { id: 1, nama: 'Fine Robusta', karakter: 'Chocolate, Nutty, Heavy Body', harga: 'Rp 15.000', image: '/img/robusta.png' },
+  { id: 2, nama: 'Arabica Special', karakter: 'Citrus, Caramel, Light Acid', harga: 'Rp 15.000', image: '/img/arabica.png' }
+];
+---
+
+<MainLayout title="Lakoffie | Kopi Bubuk Murni Rasa Cafe">
+  
+  <header class="hero">
+    <div class="hero-content">
+      <span class="badge">Bukan Sekadar Kopi Hitam</span>
+      <h1 class="glare-text">Selama Ini Kamu Kira <br/><span>Kopi Cuma Pahit?</span></h1>
+      <div class="fact-row">
+        <span>🍫 Gula Jawa</span>
+        <span>☕ Bold Body</span>
+        <span>🍋 Asam Elegan</span>
+      </div>
+      <p class="hero-intro">Masa nggak pengin ngopi nikmat ala café dengan harga bersahabat?</p>
+      <a href="https://wa.me/6285175285640" class="btn-gold">Tanya di WhatsApp</a>
+    </div>
+  </header>
+
+  <section class="value-bar">
+    <div class="value-item">Karakter unik di tiap seduhan</div>
+    <div class="value-item">Kualitas cafe, harga rumahan</div>
+    <div class="value-item">100% Kopi Murni</div>
+  </section>
+
+  <section class="products">
+    <div class="section-header">
+      <h2>Varian Kopi Spesial</h2>
+      <p>Pilih karakter yang paling mewakili lidahmu.</p>
+    </div>
+    <div class="product-grid">
+      {varianKopi.map((v) => (
+        <div class="product-card">
+          <div class="card-image">
+             <img src={v.image} alt={v.nama} />
+          </div>
+          <div class="card-info">
+            <h3>{v.nama}</h3>
+            <p class="karakter">{v.karakter}</p>
+            <span class="price">{v.harga}</span>
+            <a href="https://wa.me/6285175285640" class="btn-outline">Pesan Sekarang</a>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="testi">
+     <h2>Apa Kata Penikmat?</h2>
+     <div class="testi-grid">
+        <div class="testi-card">
+          <p>Aromanya beda, benar-benar terasa murni tanpa campuran. Gula jawa-nya kerasa banget di Fine Robusta-nya.</p>
+          <cite>— Budi Santoso</cite>
+        </div>
+        
+        <div class="testi-card">
+          <p>Kualitas kopi café tapi bisa bikin sendiri di rumah. Lebih hemat tapi tetep bisa gaya.</p>
+          <cite>— Sarah Wijaya</cite>
+        </div>
+
+        <div class="testi-card">
+          <p>Layanan WA-nya ramah, konsultasi dulu sebelum beli dikasih saran yang pas buat lidah saya.</p>
+          <cite>— Andi Pratama</cite>
+        </div>
+     </div>
+  </section>
+
+  <section class="market">
+    <h3>Dapatkan Secara Online</h3>
+    <div class="market-links">
+      <a href="https://www.shopee.co.id/Lakoffie">Shopee</a>
+      <a href="https://www.tokopedia.com/Lakoffie">Tokopedia</a>
+      <a href="https://www.tiktok.com/@lakoffie_">TikTok Shop</a>
+    </div>
+    
+    <div class="mitra-cta" style="margin-top: 4rem;">
+      <p style="margin-bottom: 2rem; color: #666;">Ingin merasakan langsung atau ambil di tempat?</p>
+      <a href="/mitra" class="btn-mitra-luxury">
+        Cek Lokasi Mitra 📍
+      </a>
+    </div>
+  </section>
+
+</MainLayout>

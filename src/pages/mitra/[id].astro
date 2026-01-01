@@ -1,0 +1,70 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import { daftarMitra } from '../../data/mitra.ts';
+
+export async function getStaticPaths() {
+  return daftarMitra.map((mitra) => ({
+    params: { id: mitra.id },
+    props: { mitra },
+  }));
+}
+
+const { mitra } = Astro.props;
+
+if (!mitra) return Astro.redirect('/404');
+---
+
+<MainLayout title={`${mitra.nama} | Mitra Lakoffie`} description={`Temukan lokasi ${mitra.nama} di ${mitra.kecamatan}, ${mitra.wilayah}. Nikmati kopi Lakoffie murni terdekat.`}>
+  
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "CoffeeShop",
+    "name": mitra.nama,
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": mitra.alamat,
+      "addressLocality": mitra.kecamatan,
+      "addressRegion": mitra.wilayah
+    },
+    "image": mitra.image,
+    "url": Astro.url.href
+  })} />
+
+  <section class="detail-mitra">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/mitra">← Kembali ke Daftar Mitra</a>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail-image">
+          <img src={mitra.image} alt={`Foto Toko ${mitra.nama}`} />
+        </div>
+
+        <div class="detail-info">
+          <span class="badge">{mitra.jenis}</span>
+          <h1>{mitra.nama}</h1>
+          <div class="location-box">
+            <p class="wilayah">📍 {mitra.wilayah}, {mitra.kecamatan}</p>
+            <p class="alamat">{mitra.alamat}</p>
+          </div>
+
+          <div class="action-buttons">
+            <a href={mitra.gmaps} target="_blank" class="btn-primary">
+              Petunjuk Jalan (Maps)
+            </a>
+            <a href={`https://wa.me/6285175285640?text=Halo, saya ingin tanya stok Lakoffie di ${mitra.nama}`} class="btn-secondary">
+              Hubungi Toko
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</MainLayout>
+
+<style>
+  /* Style tetap sama seperti sebelumnya */
+  .detail-mitra { padding-top: 120px; padding-bottom: 80px; }
+  /* ... sisa style kamu ... */
+</style>

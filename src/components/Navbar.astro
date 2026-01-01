@@ -1,0 +1,34 @@
+---
+/* Navbar Lakoffie Gen Z Edition */
+---
+<nav class="navbar">
+  <div class="nav-container">
+    <button id="menu-btn" aria-label="Toggle Menu">
+      <span class="hamburger"></span>
+    </button>
+
+    <div class="brand">
+      <h1>Lakoffie</h1>
+      <span>kopi bubuk murni</span>
+    </div>
+
+    <ul class="nav-links" id="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/mitra">Mitra</a></li>
+      <li><a href="/artikel">Artikel</a></li>
+    </ul>
+  </div>
+</nav>
+
+<style>
+  @import "../styles/navbar.css";
+</style>
+
+
+<script>
+  import { initNavbar } from '../scripts/navbar.ts';
+  // Jalankan saat halaman dimuat
+  initNavbar();
+  // Jalankan lagi jika ada transisi halaman (khas Astro)
+  document.addEventListener('astro:page-load', initNavbar);
+</script>
