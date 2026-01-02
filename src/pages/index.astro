@@ -160,34 +160,79 @@ const produkBaru = varianKopi.find(k => k.isNew);
   </section>
 
   {produkBaru && (
-    <div id="newProductModal" class="modal-overlay">
-      <div class="modal-card">
-        <button id="closeModal">&times;</button>
-        <span class="gold-label">New Arrival</span>
-        <h2>{produkBaru.nama} Telah Hadir!</h2>
-        <p>Penasaran dengan rahasia rasa terbaru dari Lakoffie? Yuk, jadi yang pertama mencicipi!</p>
-        <a href={`/produk/${produkBaru.slug}`} class="btn-gold-modal">Lihat Produk Baru</a>
+  <div id="newProductModal" class="modal-overlay">
+    <div class="modal-content">
+      <button id="closeModal" class="close-btn" aria-label="Close">&times;</button>
+      
+      <div class="modal-grid">
+        <div class="modal-visual">
+          <img src={produkBaru.image} alt={produkBaru.nama} class="modal-img" />
+          <div class="visual-overlay"></div>
+        </div>
+        
+        <div class="modal-body">
+          <span class="gold-label">Eksklusif Terbaru</span>
+          <h2>{produkBaru.nama}</h2>
+          <div class="divider"></div>
+          <p class="modal-desc">
+            Rasakan simfoni rasa yang belum pernah ada sebelumnya. {produkBaru.karakter} yang diracik khusus untuk standar lidah Master.
+          </p>
+          
+          <div class="modal-cta-group">
+            <a href={`/produk/${produkBaru.slug}`} class="btn-primary-modal">
+              Jelajahi Rasa
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <p class="limited-tag">*Persediaan Terbatas</p>
+          </div>
+        </div>
       </div>
     </div>
-  )}
+  </div>
+)}
 
 </MainLayout>
 
 <script is:inline>
-  // Logic Pop-up Otomatis
+  // Master, logic ini memastikan kesan mewah tidak terganggu oleh pop-up yang muncul terus-menerus
   window.addEventListener('load', () => {
+    const modal = document.getElementById('newProductModal');
+    const closeBtn = document.getElementById('closeModal');
+    
+    // 1. Cek Session Storage agar tidak mengganggu user yang sedang asyik browsing
     const hasSeenPopup = sessionStorage.getItem('seenNewProduct');
     
-    if (!hasSeenPopup) {
+    // 2. Munculkan setelah delay 4 detik (Golden Time agar user tidak kaget)
+    if (!hasSeenPopup && modal) {
       setTimeout(() => {
-        const modal = document.getElementById('newProductModal');
-        if (modal) modal.style.display = 'flex';
+        modal.style.display = 'flex';
+        // Tambahkan efek transisi halus jika Master menggunakan CSS opacity
+        modal.style.opacity = '1';
       }, 4000);
     }
-  });
 
-  document.getElementById('closeModal')?.addEventListener('click', () => {
-    document.getElementById('newProductModal').style.display = 'none';
-    sessionStorage.setItem('seenNewProduct', 'true');
+    // 3. Fungsi Menutup Modal & Mencatat Session
+    const handleClose = () => {
+      modal.style.display = 'none';
+      sessionStorage.setItem('seenNewProduct', 'true');
+    };
+
+    // Klik Tombol Close (X)
+    closeBtn?.addEventListener('click', handleClose);
+
+    // Klik di luar area Modal (Overlay Hitam) untuk menutup
+    // Ini standar UX Luxury: User tidak boleh merasa "terjebak"
+    window.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        handleClose();
+      }
+    });
+
+    // Menutup dengan tombol Escape pada keyboard (Opsional tapi Pro)
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && modal.style.display === 'flex') {
+        handleClose();
+      }
+    });
   });
 </script>

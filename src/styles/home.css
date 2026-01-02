@@ -151,84 +151,203 @@
 }
 
 /* --- 5. PRODUCTS SECTION --- */
-.products { padding: 8rem 2rem; }
-.section-header { text-align: center; margin-bottom: 4rem; }
+.products { 
+  padding: 8rem 2rem; 
+  background: var(--bg-dark);
+}
+
+.section-header { text-align: center; margin-bottom: 5rem; }
 
 .section-desc {
   color: #888;
   max-width: 600px;
-  margin: 0 auto;
+  margin: 1rem auto 0;
+  line-height: 1.6;
 }
 
 .gold-text { color: var(--gold); }
 
+/* Grid Layout - Menggunakan standar yang sama dengan Mitra */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  max-width: 1100px;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); 
+  gap: 4rem;
+  max-width: 1300px;
   margin: 0 auto;
 }
 
+/* Card Styling - Mirip Mitra Card Index */
 .product-card {
   position: relative;
-  background: var(--card-bg);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 1rem;
-  transition: 0.4s;
-  text-align: center;
+  background: linear-gradient(145deg, #121212, #1a1a1a);
+  border: 1px solid rgba(212, 175, 55, 0.1);
+  border-radius: 5px; /* Membulat mewah */
+  transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card:hover {
+  transform: translateY(-10px);
+  border-color: var(--gold);
+  box-shadow: 0 15px 40px rgba(212, 175, 55, 0.15);
 }
 
 .promo-ribbon {
   position: absolute;
-  top: 15px;
-  left: -30px;
+  top: 20px;
+  left: -35px;
   background: #e74c3c;
   color: white;
-  padding: 5px 35px;
+  padding: 5px 40px;
   transform: rotate(-45deg);
-  font-size: 0.7rem;
-  font-weight: bold;
-  z-index: 10;
+  font-size: 0.65rem;
+  font-weight: 800;
+  z-index: 5;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
 .card-image {
   width: 100%;
-  aspect-ratio: 4/3;
+  height: 400px; /* Tinggi proporsional */
   overflow: hidden;
   position: relative;
+}
+
+.card-image::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; width: 100%; height: 50%;
+  background: linear-gradient(to bottom, transparent, #121212);
+  z-index: 1;
 }
 
 .card-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: 0.6s;
+  filter: brightness(0.8);
+}
+
+.product-card:hover .card-image img {
+  transform: scale(1.1);
+  filter: brightness(1);
 }
 
 .pure-badge {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(0,0,0,0.7);
-  color: var(--gold);
-  padding: 4px 8px;
-  font-size: 10px;
-  border: 1px solid var(--gold);
+  bottom: 20px;
+  left: 20px;
+  background: rgba(212, 175, 55, 0.9);
+  color: #000;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
   z-index: 2;
 }
 
-.card-info { padding: 1rem 0.5rem; }
-.series-label { color: var(--gold); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; }
-.card-info h3 { font-family: serif; font-size: 1.8rem; margin: 1rem 0; color: #fff; }
-.karakter { color: #888; min-height: 3em; }
+.card-info { 
+  padding: 3rem 2.5rem; 
+  text-align: center; 
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
 
-.price-wrapper { margin: 1.5rem 0; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem; }
-.old-price { text-decoration: line-through; color: #666; font-size: 0.8rem; display: block; }
-.price-promo { color: #e74c3c; font-weight: bold; font-size: 1.2rem; }
-.price { color: var(--gold); font-size: 1.2rem; font-weight: bold; }
+.series-label { 
+  color: var(--gold); 
+  font-size: 0.65rem; 
+  text-transform: uppercase; 
+  letter-spacing: 3px; 
+  opacity: 0.8;
+}
 
-.product-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.card-info h3 { 
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem; 
+  margin: 0.8rem 0; 
+  color: #fff; 
+}
+
+.karakter { 
+  color: #888; 
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.price-wrapper { 
+  margin-top: auto;
+  margin-bottom: 1.5rem; 
+  padding-top: 1.2rem;
+  border-top: 1px solid rgba(255,255,255,0.05); 
+}
+
+.old-price { text-decoration: line-through; color: #555; font-size: 0.85rem; }
+.price-promo { color: #e74c3c; font-weight: 800; font-size: 1.4rem; margin-left: 8px; }
+.price { color: var(--gold); font-size: 1.4rem; font-weight: 800; }
+
+.product-actions { 
+  display: grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap: 12px; 
+}
+
+.btn-outline, .btn-gold {
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-decoration: none;
+  text-align: center;
+  transition: 0.3s;
+}
+
+.btn-outline {
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+  background: rgba(255,255,255,0.03);
+}
+
+.btn-outline:hover { background: #fff; color: #000; }
+
+.btn-gold {
+  background: var(--gold);
+  color: #000;
+}
+
+.btn-gold:hover { transform: scale(1.05); filter: brightness(1.1); }
+
+/* --- MOBILE RESPONSIVE (MATCHING MITRA STYLE) --- */
+@media (max-width: 768px) {
+  .products { padding: 5rem 1rem; }
+
+  .product-grid {
+    grid-template-columns: 1fr; /* Satu kolom agar card besar */
+    gap: 2rem;
+  }
+
+  .product-card {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .card-image {
+    height: 350px; /* Tetap megah di HP */
+  }
+
+  .card-info h3 {
+    font-size: 1.6rem;
+  }
+
+  .product-actions {
+    gap: 10px;
+  }
+}
 
 /* --- 6. TESTIMONIALS --- */
 .testi { padding: 6rem 1rem; text-align: center; background: #0f0e0c; }
@@ -272,9 +391,151 @@
 .btn-mitra-luxury { border: 1px solid var(--gold); color: #fff; padding: 1rem 2rem; text-decoration: none; text-transform: uppercase; letter-spacing: 3px; font-size: 0.8rem; }
 
 /* --- 9. MODAL POPUP --- */
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); }
-.modal-card { background: var(--card-bg); padding: 2.5rem; border: 1px solid var(--gold); max-width: 400px; width: 100%; text-align: center; position: relative; border-radius: 8px; animation: modalFadeUp 0.5s ease forwards; }
-#closeModal { position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px); /* Efek blur background yang mahal */
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.modal-content {
+  background: #111;
+  width: 100%;
+  max-width: 850px;
+  position: relative;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 0; /* Sudut tajam lebih Luxury */
+  overflow: hidden;
+  animation: modalFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalFadeUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+}
+
+.modal-visual {
+  position: relative;
+  height: 500px;
+  background: #1a1a1a;
+}
+
+.modal-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.8);
+}
+
+.visual-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, transparent, #111);
+}
+
+.modal-body {
+  padding: 4rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.gold-label {
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.modal-body h2 {
+  font-family: serif;
+  font-size: 2.5rem;
+  color: #fff;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+}
+
+.divider {
+  width: 50px;
+  height: 2px;
+  background: var(--gold);
+  margin-bottom: 1.5rem;
+}
+
+.modal-desc {
+  color: #aaa;
+  line-height: 1.8;
+  font-size: 0.95rem;
+  margin-bottom: 2.5rem;
+}
+
+.btn-primary-modal {
+  background: var(--gold);
+  color: #000;
+  padding: 18px 30px;
+  text-decoration: none;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  transition: 0.4s;
+}
+
+.btn-primary-modal:hover {
+  background: #fff;
+  transform: translateY(-5px);
+}
+
+.limited-tag {
+  color: #555;
+  font-size: 0.7rem;
+  margin-top: 15px;
+  font-style: italic;
+  text-align: center;
+}
+
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+  z-index: 10;
+  opacity: 0.5;
+  transition: 0.3s;
+}
+
+.close-btn:hover { opacity: 1; transform: rotate(90deg); }
+
+/* Mobile View */
+@media (max-width: 768px) {
+  .modal-grid { grid-template-columns: 1fr; }
+  .modal-visual { height: 250px; }
+  .visual-overlay { background: linear-gradient(to bottom, transparent, #111); }
+  .modal-body { padding: 2rem 1.5rem; text-align: center; }
+  .modal-body h2 { font-size: 1.8rem; }
+  .divider { margin: 0 auto 1.5rem; }
+}
 
 /* --- 10. RESPONSIVE --- */
 @media (max-width: 768px) {

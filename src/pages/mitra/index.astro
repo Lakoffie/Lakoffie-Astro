@@ -3,7 +3,6 @@ import MainLayout from '../../layouts/MainLayout.astro';
 import { daftarMitra } from '../../data/mitra';
 import '../../styles/mitra.css';
 
-// Logic: Ambil wilayah unik dan urutkan sesuai abjad (A-Z)
 const daftarWilayah = [...new Set(daftarMitra.map(m => m.wilayah))].sort();
 ---
 
@@ -11,7 +10,7 @@ const daftarWilayah = [...new Set(daftarMitra.map(m => m.wilayah))].sort();
   <section class="mitra-hero">
     <div class="container">
       <h1>Temukan <span class="gold">Lakoffie</span></h1>
-      <p>Pilih wilayah atau cari lokasi terdekat untuk menikmati kemurnian kopi kami.</p>
+      <p>Pilih wilayah atau cari lokasi terdekat.</p>
     </div>
   </section>
 
@@ -32,7 +31,12 @@ const daftarWilayah = [...new Set(daftarMitra.map(m => m.wilayah))].sort();
 
     <div class="mitra-grid" id="mitraGrid">
       {daftarMitra.map((m) => (
-        <div class="mitra-card" data-nama={m.nama} data-wilayah={m.wilayah} data-kecamatan={m.kecamatan}>
+        <div class="mitra-card" 
+             data-nama={m.nama.toLowerCase()} 
+             data-wilayah={m.wilayah}
+             data-kecamatan={m.kecamatan.toLowerCase()}
+             data-lat={m.lat} 
+             data-lng={m.lng}>
           <div class="card-header">
             <span class="badge-wilayah">{m.wilayah}</span>
             <img src={m.image} alt={m.nama} loading="lazy" />
@@ -41,9 +45,10 @@ const daftarWilayah = [...new Set(daftarMitra.map(m => m.wilayah))].sort();
             <span class="jenis-tag">{m.jenis}</span>
             <h3>{m.nama}</h3>
             <p class="alamat">{m.alamat}</p>
+            <div class="jarak-info"></div> 
             <div class="card-footer">
               <a href={m.gmaps} target="_blank" class="btn-gmaps">G-Maps</a>
-              <a href={`/mitra/${m.id}`} class="btn-detail">Detail Toko</a>
+              <a href={`/mitra/${m.id}`} class="btn-detail">Detail</a>
             </div>
           </div>
         </div>
@@ -51,43 +56,108 @@ const daftarWilayah = [...new Set(daftarMitra.map(m => m.wilayah))].sort();
     </div>
   </div>
 
-  <script>
-    const searchInput = document.getElementById('searchInput') as HTMLInputElement;
-    const chips = document.querySelectorAll('.chip-wilayah');
-    const cards = document.querySelectorAll('.mitra-card') as NodeListOf<HTMLElement>;
+ <script is:inline>
+  // --- UTILS: Hitung Jarak ---
+  function hitungJarak(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+    return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+  }
 
-    // 1. Fungsi Filter Gabungan
-    function filterMitra() {
-      const activeChip = document.querySelector('.chip-wilayah.active') as HTMLElement;
-      const filterWilayah = activeChip?.dataset.filter || 'semua';
-      const searchText = searchInput.value.toLowerCase();
+  const searchInput = document.getElementById('searchInput');
+  const btnNearby = document.getElementById('btnNearby');
+  const grid = document.getElementById('mitraGrid');
+  const chips = document.querySelectorAll('.chip-wilayah');
 
-      cards.forEach(card => {
-        const cardWilayah = card.dataset.wilayah || '';
-        const cardContent = card.innerText.toLowerCase();
-        
-        const matchesWilayah = filterWilayah === 'semua' || cardWilayah === filterWilayah;
-        const matchesSearch = cardContent.includes(searchText);
+  function filterData() {
+    const cards = document.querySelectorAll('.mitra-card');
+    const activeChip = document.querySelector('.chip-wilayah.active');
+    const filterWilayah = activeChip?.dataset.filter || 'semua';
+    const query = searchInput.value.toLowerCase();
 
-        if (matchesWilayah && matchesSearch) {
-          card.style.display = 'block';
-          card.style.animation = 'fadeIn 0.4s ease forwards';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-    }
-
-    // 2. Event Listener untuk Chips
-    chips.forEach(chip => {
-      chip.addEventListener('click', () => {
-        chips.forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        filterMitra();
-      });
+    cards.forEach(card => {
+      const matchW = filterWilayah === 'semua' || card.dataset.wilayah === filterWilayah;
+      const matchS = card.dataset.nama.includes(query) || card.dataset.kecamatan.includes(query);
+      card.style.display = (matchW && matchS) ? 'block' : 'none';
     });
+  }
 
-    // 3. Event Listener untuk Search Input
-    searchInput?.addEventListener('input', filterMitra);
-  </script>
+  searchInput.addEventListener('input', filterData);
+  chips.forEach(btn => {
+    btn.addEventListener('click', () => {
+      chips.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filterData();
+    });
+  });
+
+  // --- LOGIC GPS TERDEKAT ---
+  btnNearby.addEventListener('click', () => {
+    if (!navigator.geolocation) return alert("GPS tidak didukung oleh browser Anda");
+    
+    btnNearby.innerText = "⚡ Mengurutkan...";
+
+    navigator.geolocation.getCurrentPosition(pos => {
+      const uLat = pos.coords.latitude;
+      const uLng = pos.coords.longitude;
+      
+      // Ambil semua card dan ubah jadi Array agar bisa di-sort total
+      const cardsArray = Array.from(document.querySelectorAll('.mitra-card'));
+      let listJarak = [];
+
+      // A. RESET FILTER (Sesuai permintaan: Abaikan wilayah)
+      chips.forEach(b => b.classList.remove('active'));
+      document.querySelector('[data-filter="semua"]').classList.add('active');
+      searchInput.value = ""; 
+
+      cardsArray.forEach(card => {
+        card.style.display = 'block'; 
+        const lat = parseFloat(card.dataset.lat);
+        const lng = parseFloat(card.dataset.lng);
+        
+        // Default jarak sangat jauh jika data koordinat salah/rusak
+        let d = 999999; 
+
+        if (!isNaN(lat) && !isNaN(lng)) {
+          d = hitungJarak(uLat, uLng, lat, lng);
+          
+          const box = card.querySelector('.jarak-info');
+          if (box) {
+            // FIX: Jika < 1km pakai meter, jika > 1km pakai km
+            const teksJarak = d < 1 
+              ? `📍 Sekitar ${(d * 1000).toFixed(0)} meter` 
+              : `📍 Sekitar ${d.toFixed(1)} km`;
+              
+            box.innerHTML = `<span>${teksJarak} dari lokasi Anda</span>`;
+            box.classList.add('active');
+          }
+        }
+        listJarak.push({ card, d });
+      });
+
+      // B. SORTING TOTAL: Urutkan dari yang benar-benar terkecil (0.1, 0.2, dst)
+      listJarak.sort((a, b) => a.d - b.d);
+
+      // C. RE-ORDER DOM: Kosongkan grid lalu masukkan sesuai urutan baru
+      grid.innerHTML = "";
+      listJarak.forEach(item => {
+        grid.appendChild(item.card);
+      });
+
+      btnNearby.innerText = "📍 Urut Terdekat";
+      
+      window.scrollTo({
+        top: grid.offsetTop - 120,
+        behavior: 'smooth'
+      });
+
+    }, (err) => {
+      alert("Gagal mengambil lokasi. Pastikan GPS aktif.");
+      btnNearby.innerText = "📍 Cari Terdekat";
+    });
+  });
+</script>
 </MainLayout>

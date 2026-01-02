@@ -1,51 +1,122 @@
-export interface Mitra {
-  id: string;
-  nama: string;
-  wilayah: string; // Kabupaten/Kota
-  kecamatan: string;
-  jenis: 'Toko' | 'Cafe';
-  alamat: string;
-  gmaps: string;
-  image: string;
-  lat: number; // Untuk fitur "Terdekat"
-  lng: number;
-}
-
 export const daftarMitra: Mitra[] = [
   {
-    id: 'kopi-kenangan-senja',
-    nama: 'Kopi Kenangan Senja',
-    wilayah: 'Pringsewu',
-    kecamatan: 'Pringsewu Kota',
+    id: 'warkop-lakofie',
+    nama: 'Warung Kopi Lakoffie',
+    wilayah: 'Kab. Semarang',
+    kecamatan: 'Pabelan',
     jenis: 'Cafe',
-    alamat: 'Jl. Jendral Sudirman No. 12',
-    gmaps: 'https://goo.gl/maps/xxx',
+    alamat: 'Padaan, Kec. Pabelan, Kabupaten Semarang',
+    gmaps: 'https://maps.app.goo.gl/sKmGccVqNwDFvWz79?g_st=ac',
     image: '/img/mitra/cafe1.jpg',
-    lat: -5.358,
-    lng: 105.055
+    lat: -7.280827,
+    lng: 110.523860 // SUDAH BENAR
   },
-  // Tambahkan data lainnya di sini
   {
-  id: 'minimarket-asa',
-  nama: 'Minimarket Asa & Asa Cell',
-  alamat: 'Jl. Kemiri III No.22, Kec. Sidorejo, Salatiga',
-wilayah: 'Salatiga',
-kecamatan: 'Sidorejo',
-  jenis: 'Toko',
-  image: '/img/mitra/minimarket-asa.png',
-  gmaps: 'https://maps.app.goo.gl/Q6D3kbQQeQziaieV6?g_st=ac',
-  lat: -7.3305,
-  lng: 110.5084
-},
-{
-  id: 'toko-solekah',
-  nama: 'Toko Ibu Solekah',
-  alamat: 'Jl. Karang Taruna, Kec. Sidorejo, Salatiga',
-  wilayah: 'Salatiga',
-  kecamatan: 'Sidorejo',
-  image: '/img/mitra/warung-bu-solekah.png',
-  gmaps: 'https://maps.app.goo.gl/8WpZ2RZDLrAdjMF27?g_st=ac',
-  lat: 0,
-  ling:0
-},
+    id: 'minimarket-asa',
+    nama: 'Minimarket Asa & Asa Cell',
+    alamat: 'Jl. Kemiri III No.22, Kec. Sidorejo, Salatiga',
+    wilayah: 'Salatiga',
+    kecamatan: 'Sidorejo',
+    jenis: 'Toko',
+    image: '/img/mitra/minimarket-asa.png',
+    gmaps: 'https://maps.app.goo.gl/Q6D3kbQQeQziaieV6?g_st=ac',
+    lat: -7.3305,
+    lng: 110.5084 // SUDAH BENAR
+  },
+  {
+    id: 'toko-solekah',
+    nama: 'Toko Ibu Solekah',
+    alamat: 'Jl. Karang Taruna, Kec. Sidorejo, Salatiga',
+    wilayah: 'Salatiga',
+    kecamatan: 'Sidorejo',
+    jenis: 'Toko',
+    image: '/img/mitra/warung-bu-solekah.png',
+    gmaps: 'https://maps.app.goo.gl/8WpZ2RZDLrAdjMF27?g_st=ac',
+    lat: -7.3201627,
+    lng: 110.5062782 // PERBAIKAN: ling -> lng
+  },
+  {
+    id: 'toko-joko',
+    nama: 'Toko Pak Joko',
+    alamat: 'Jl. Kali Sawo No.28, Kec. Sidorejo, Salatiga',
+    wilayah: 'Salatiga',
+    kecamatan: 'Sidorejo',
+    jenis: 'Toko',
+    image: '/img/mitra/toko-joko.png',
+    gmaps: 'https://maps.app.goo.gl/CWyYgPUSrw4JCVdS8?g_st=ac',
+    lat: -7.3127193,
+    lng: 110.5009463 // PERBAIKAN: ling -> lng
+  },
+  {
+    id: 'toko-fann',
+    nama: 'Toko Fann',
+    alamat: 'Jl. Porwosari IV, Bugel, Kec. Sidorejo, Salatiga',
+    wilayah: 'Salatiga',
+    kecamatan: 'Sidorejo',
+    jenis: 'Toko',
+    image: '/img/mitra/toko-fann.png',
+    gmaps: 'https://maps.app.goo.gl/Gdwi3L5mWcn4nFEj6?g_st=ac',
+    lat: -7.2808162,
+    lng: 110.5237892 // PERBAIKAN: ling -> lng
+  },
+  {
+    id: 'wm-aksa',
+    nama: 'Warung Madura 24 jam (Aksa&Husein)',
+    alamat: 'jl. Pattimura No.22, Kauman Kidul,Sidorejo, Salatiga',
+    wilayah: 'Salatiga',
+    kecamatan: 'Sidorejo',
+    jenis: 'Toko',
+    image: '/img/mitra/warung-madura-aksa-husein.png',
+    gmaps: 'https://maps.app.goo.gl/gWgPRjc9uXsMDpgY6?g_st=ac',
+    lat: -7.2807647,
+    lng: 110.5236580 // PERBAIKAN: ling -> lng
+  },
+  {
+    id: 'toko-harni',
+    nama: 'Toko Ibu Harni',
+    alamat: 'Jl. Salatiga - Glawan, Krajan, Semowo, Kec. Pabelan, Kabupaten Semarang',
+    wilayah: 'Kab. Semarang',
+    kecamatan: 'Pabelan',
+    jenis: 'Toko',
+    image: '/img/mitra/toko-bu-harni.png',
+    gmaps: 'https://maps.app.goo.gl/oq34WN4KFJaq9LNA9?g_st=ac',
+    lat: -7.2810673,
+    lng: 110.5237625 // PERBAIKAN: ling -> lng
+  },
+  {
+    id: 'warung-darsih',
+    nama: 'Warung Ibu Darsih',
+    alamat: 'Galangan, Kadirejo, Kec. Pabelan, Kabupaten Semarang',
+    wilayah: 'Kab. Semarang',
+    kecamatan: 'Pabelan',
+    jenis: 'Toko',
+    image: '/img/mitra/warung-bu-darsih.png',
+    gmaps: 'https://maps.app.goo.gl/NqAEgKf2urRFwY4J7?g_st=ac',
+    lat: -7.2807836,
+    lng: 110.5237879 // PERBAIKAN: ling -> lng
+  },
+  {
+    id: 'toko-murah-rejeki',
+    nama: 'Toko Murah Rejeki',
+    alamat: 'Karangrejo, Pabelan, Kec. Pabelan, Kabupaten Semarang',
+    wilayah: 'Kab. Semarang',
+    kecamatan: 'Pabelan',
+    jenis: 'Toko',
+    image: '/img/mitra/toko-sumber-rejeki.png',
+    gmaps: 'https://maps.app.goo.gl/QkU6PtCb6NKAoKEU8?g_st=ac',
+    lat: -7.2808227,
+    lng: 110.5238069 // PERBAIKAN: ling -> lng
+  },
+  {
+    id: 'toko-indo-khafidh',
+    nama: 'Warung Indo Khafidh',
+    alamat: 'Tegalsari, Jembrak, Kec. Pabelan, Kabupaten Semarang',
+    wilayah: 'Kab. Semarang',
+    kecamatan: 'Pabelan',
+    jenis: 'Toko',
+    image: '/img/mitra/toko-indo-khafidh.png',
+    gmaps: 'https://maps.app.goo.gl/gB97nR3gd1k7qH9TA?g_st=ac',
+    lat: -7.2807894,
+    lng: 110.5237944 // PERBAIKAN: ling -> lng
+  },
 ];
