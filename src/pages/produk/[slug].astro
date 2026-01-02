@@ -1,0 +1,202 @@
+---
+// src/pages/produk/[slug].astro
+import MainLayout from '../../layouts/MainLayout.astro';
+import { varianKopi } from '../../data/kopi';
+
+export async function getStaticPaths() {
+  return varianKopi.map((k) => ({
+    params: { slug: k.slug },
+    props: { k },
+  }));
+}
+
+const { k } = Astro.props;
+---
+
+<MainLayout title={`${k.nama} | Lakoffie`}>
+  <section class="detail-produk">
+    <div class="container-small">
+      
+      <a href="/" class="back-link">
+        <span class="arrow">←</span> Kembali ke Katalog
+      </a>
+      
+      <div class="grid-detail">
+        <div class="img-container">
+          <img src={k.image} alt={k.nama} class="product-img" />
+          {k.isNew && <span class="new-tag">New Arrival</span>}
+        </div>
+        
+        <div class="content-box">
+          <span class="category-label">Signature Collection</span>
+          <h1>{k.nama}</h1>
+          
+          <div class="price-tag">
+            {k.hargaPromo ? (
+              <div class="price-group">
+                <span class="price-main">{k.hargaPromo}</span>
+                <span class="price-strike">{k.harga}</span>
+              </div>
+            ) : <span class="price-main">{k.harga}</span>}
+          </div>
+          
+          <div class="description-area">
+            <h3>Karakteristik & Deskripsi</h3>
+            <div class="text-content">
+              {k.deskripsi}
+            </div>
+          </div>
+
+          <div class="product-specs">
+            <div class="spec-row">
+              <span>Profil Rasa:</span>
+              <strong>{k.karakter}</strong>
+            </div>
+            <div class="spec-row">
+              <span>Netto:</span>
+              <strong>100 Gram</strong>
+            </div>
+          </div>
+
+          <div class="action-area">
+            <a href="https://wa.me/6285175285640" class="btn-wa-large">
+              Pesan via WhatsApp Sekarang
+            </a>
+            <p class="shipping-info">⚡ Dikirim langsung dari Salatiga</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</MainLayout>
+
+<style>
+  .detail-produk {
+    padding: 140px 0 80px;
+    background: #0c0b0a;
+    color: #fff;
+  }
+
+  .container-small {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* Perbaikan Link */
+  .back-link {
+    text-decoration: none;
+    color: #666;
+    font-size: 0.9rem;
+    transition: 0.3s;
+    display: inline-block;
+    margin-bottom: 2rem;
+  }
+  .back-link:hover { color: var(--gold); }
+  .back-link .arrow { margin-right: 5px; }
+
+  .grid-detail {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  /* Perbaikan Gambar agar tidak terlalu besar */
+  .img-container {
+    position: relative;
+    background: #161412;
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .product-img {
+    width: 100%;
+    max-width: 400px; /* Batas maksimal lebar */
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+  }
+
+  .new-tag {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: var(--gold);
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: bold;
+    padding: 4px 12px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+
+  /* Konten Area */
+  .category-label {
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-size: 0.8rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  h1 { font-family: serif; font-size: 3rem; margin: 0; }
+
+  .price-tag { margin: 1.5rem 0; }
+  .price-main { font-size: 2rem; font-weight: bold; color: #fff; }
+  .price-strike { text-decoration: line-through; color: #666; margin-left: 1rem; font-size: 1.2rem; }
+
+  /* Perbaikan Deskripsi agar Rapih */
+  .description-area {
+    margin: 2.5rem 0;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .description-area h3 { color: var(--gold); margin-bottom: 1rem; font-size: 1rem; text-transform: uppercase; }
+  .text-content {
+    line-height: 1.8;
+    color: #aaa;
+    white-space: pre-line; /* Ini kuncinya agar enter di data terbaca */
+    font-size: 1.05rem;
+  }
+
+  .product-specs {
+    background: rgba(255,255,255,0.03);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2.5rem;
+  }
+  .spec-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.8rem;
+    font-size: 0.95rem;
+  }
+  .spec-row:last-child { margin-bottom: 0; }
+  .spec-row span { color: #666; }
+
+  /* CTA */
+  .btn-wa-large {
+    display: block;
+    background: var(--gold);
+    color: #000;
+    text-decoration: none;
+    text-align: center;
+    padding: 1.2rem;
+    font-weight: bold;
+    border-radius: 4px;
+    text-transform: uppercase;
+    transition: 0.3s;
+  }
+  .btn-wa-large:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2); }
+  .shipping-info { text-align: center; font-size: 0.8rem; color: #666; margin-top: 1rem; }
+
+  /* Responsive Mobile */
+  @media (max-width: 768px) {
+    .grid-detail { grid-template-columns: 1fr; gap: 2rem; }
+    h1 { font-size: 2.2rem; }
+    .img-container { padding: 1rem; }
+  }
+</style>

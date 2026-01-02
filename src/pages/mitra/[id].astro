@@ -1,6 +1,7 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
 import { daftarMitra } from '../../data/mitra.ts';
+import '../../styles/mitra.css';
 
 export async function getStaticPaths() {
   return daftarMitra.map((mitra) => ({
@@ -15,7 +16,6 @@ if (!mitra) return Astro.redirect('/404');
 ---
 
 <MainLayout title={`${mitra.nama} | Mitra Lakoffie`} description={`Temukan lokasi ${mitra.nama} di ${mitra.kecamatan}, ${mitra.wilayah}. Nikmati kopi Lakoffie murni terdekat.`}>
-  
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
     "@type": "CoffeeShop",
@@ -63,8 +63,4 @@ if (!mitra) return Astro.redirect('/404');
   </section>
 </MainLayout>
 
-<style>
-  /* Style tetap sama seperti sebelumnya */
-  .detail-mitra { padding-top: 120px; padding-bottom: 80px; }
-  /* ... sisa style kamu ... */
-</style>
+<style> </style>

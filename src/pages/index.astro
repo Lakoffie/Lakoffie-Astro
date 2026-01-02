@@ -1,12 +1,11 @@
 ---
+// src/pages/index.astro
 import MainLayout from '../layouts/MainLayout.astro';
+import { varianKopi } from '../data/kopi'; // Pastikan Master sudah membuat file src/data/kopi.ts
 import '../styles/home.css';
 
-// Data simulasi (nanti bisa dipindah ke file data tersendiri)
-const varianKopi = [
-  { id: 1, nama: 'Fine Robusta', karakter: 'Chocolate, Nutty, Heavy Body', harga: 'Rp 15.000', image: '/img/robusta.png' },
-  { id: 2, nama: 'Arabica Special', karakter: 'Citrus, Caramel, Light Acid', harga: 'Rp 15.000', image: '/img/arabica.png' }
-];
+// Filter produk baru untuk trigger pop-up secara dinamis
+const produkBaru = varianKopi.find(k => k.isNew);
 ---
 
 <MainLayout title="Lakoffie | Kopi Bubuk Murni Rasa Cafe">
@@ -15,38 +14,123 @@ const varianKopi = [
     <div class="hero-content">
       <span class="badge">Bukan Sekadar Kopi Hitam</span>
       <h1 class="glare-text">Selama Ini Kamu Kira <br/><span>Kopi Cuma Pahit?</span></h1>
-      <div class="fact-row">
-        <span>🍫 Gula Jawa</span>
-        <span>☕ Bold Body</span>
-        <span>🍋 Asam Elegan</span>
+      
+      <div class="marketing-hook">
+        <p class="hero-intro-bold">Upgrade ritual kopimu hari ini.</p>
+        <p class="hero-desc">
+          Rasakan kemewahan 100% biji kopi pilihan dengan aroma gula jawa dan sensasi asam elegan. 
+          <span class="gold-italic">Kualitas Signature Cafe, kini bisa diseduh siapa saja, di mana saja.</span>
+        </p>
       </div>
-      <p class="hero-intro">Masa nggak pengin ngopi nikmat ala café dengan harga bersahabat?</p>
-      <a href="https://wa.me/6285175285640" class="btn-gold">Tanya di WhatsApp</a>
+
+      <div class="cta-wrapper">
+        <a href="https://wa.me/6285175285640" class="btn-gold">Konsultasi Rasa di WA</a>
+      </div>
     </div>
   </header>
 
-  <section class="value-bar">
-    <div class="value-item">Karakter unik di tiap seduhan</div>
-    <div class="value-item">Kualitas cafe, harga rumahan</div>
-    <div class="value-item">100% Kopi Murni</div>
+<section class="value-bar-luxury">
+  <div class="container-value">
+    <div class="value-item-soft">
+      <div class="value-icon-circle">01</div>
+      <div class="value-info">
+        <h3>Eksplorasi Rasa</h3>
+        <p>Kenapa harus puas dengan satu rasa, jika setiap seduhan bisa menceritakan petualangan yang berbeda?</p>
+      </div>
+    </div>
+
+    <div class="value-item-soft">
+      <div class="value-icon-circle">02</div>
+      <div class="value-info">
+        <h3>Kemewahan Inklusif</h3>
+        <p>Menikmati kopi kualitas <em>specialty</em> bukan lagi soal gengsi, tapi soal hak lidahmu untuk dimanja setiap pagi.</p>
+      </div>
+    </div>
+
+    <div class="value-item-soft">
+      <div class="value-icon-circle">03</div>
+      <div class="value-info">
+        <h3>Kejujuran Alam</h3>
+        <p>Saat yang lain berkompromi dengan campuran, kami memilih tetap setia pada kemurnian biji kopi pilihan.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <section class="sensory-experience" style="padding: 4rem 0; background: #0c0b0a;">
+    <div class="container">
+      <h2 style="text-align: center; color: #fff; font-family: serif; margin-bottom: 2rem; font-size: 1.5rem;">
+        Catatan Rasa yang Akan <span style="color: var(--gold);">Anda Temukan</span>
+      </h2>
+      <div class="fact-row-premium">
+        <div class="fact-item">
+          <span class="icon">🍫</span>
+          <div class="fact-text">
+            <strong>Aroma Gula Jawa</strong>
+            <p>Manis alami yang menenangkan</p>
+          </div>
+        </div>
+        <div class="fact-item">
+          <span class="icon">☕</span>
+          <div class="fact-text">
+            <strong>Bold Body</strong>
+            <p>Tekstur kental yang mantap</p>
+          </div>
+        </div>
+        <div class="fact-item">
+          <span class="icon">🍋</span>
+          <div class="fact-text">
+            <strong>Asam Elegan</strong>
+            <p>Kesegaran buah di setiap sesapan</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="cta-bottom" style="text-align: center; margin-top: 3rem;">
+         <p style="color: #666; margin-bottom: 1.5rem;">Masa nggak pengin ngopi nikmat ala café dengan harga bersahabat?</p>
+         <a href="https://wa.me/6285175285640" class="btn-outline">Lihat Koleksi Kopi</a>
+      </div>
+    </div>
   </section>
+
 
   <section class="products">
     <div class="section-header">
+      <span class="badge">Selected Beans</span>
       <h2>Varian Kopi Spesial</h2>
-      <p>Pilih karakter yang paling mewakili lidahmu.</p>
+      <p class="section-desc">Setiap biji bercerita tentang tanah asalnya. Temukan karakter yang paling mewakili <span class="gold-text">identitas lidahmu.</span></p>
     </div>
+
     <div class="product-grid">
       {varianKopi.map((v) => (
         <div class="product-card">
+          {v.hargaPromo && <div class="promo-ribbon">PROMO</div>}
+          
           <div class="card-image">
              <img src={v.image} alt={v.nama} />
+             <div class="pure-badge">100% Pure</div>
           </div>
+
           <div class="card-info">
+            <span class="series-label">Signature Series</span>
             <h3>{v.nama}</h3>
             <p class="karakter">{v.karakter}</p>
-            <span class="price">{v.harga}</span>
-            <a href="https://wa.me/6285175285640" class="btn-outline">Pesan Sekarang</a>
+            
+            <div class="price-wrapper">
+              {v.hargaPromo ? (
+                <div class="promo-price-stack">
+                  <span class="old-price">{v.harga}</span>
+                  <span class="price-promo">{v.hargaPromo}</span>
+                </div>
+              ) : (
+                <span class="price">{v.harga}</span>
+              )}
+            </div>
+            
+            <div class="product-actions">
+              <a href={`/produk/${v.slug}`} class="btn-outline">Detail</a>
+              <a href="https://wa.me/6285175285640" class="btn-gold">Beli</a>
+            </div>
           </div>
         </div>
       ))}
@@ -56,20 +140,9 @@ const varianKopi = [
   <section class="testi">
      <h2>Apa Kata Penikmat?</h2>
      <div class="testi-grid">
-        <div class="testi-card">
-          <p>Aromanya beda, benar-benar terasa murni tanpa campuran. Gula jawa-nya kerasa banget di Fine Robusta-nya.</p>
-          <cite>— Budi Santoso</cite>
-        </div>
-        
-        <div class="testi-card">
-          <p>Kualitas kopi café tapi bisa bikin sendiri di rumah. Lebih hemat tapi tetep bisa gaya.</p>
-          <cite>— Sarah Wijaya</cite>
-        </div>
-
-        <div class="testi-card">
-          <p>Layanan WA-nya ramah, konsultasi dulu sebelum beli dikasih saran yang pas buat lidah saya.</p>
-          <cite>— Andi Pratama</cite>
-        </div>
+        <div class="testi-card"><p>Aromanya beda... Gula jawa-nya kerasa banget.</p><cite>— Budi Santoso</cite></div>
+        <div class="testi-card"><p>Kualitas kopi café tapi bisa bikin sendiri di rumah.</p><cite>— Sarah Wijaya</cite></div>
+        <div class="testi-card"><p>Layanan WA-nya ramah, konsultasi dulu sebelum beli.</p><cite>— Andi Pratama</cite></div>
      </div>
   </section>
 
@@ -80,13 +153,41 @@ const varianKopi = [
       <a href="https://www.tokopedia.com/Lakoffie">Tokopedia</a>
       <a href="https://www.tiktok.com/@lakoffie_">TikTok Shop</a>
     </div>
-    
-    <div class="mitra-cta" style="margin-top: 4rem;">
-      <p style="margin-bottom: 2rem; color: #666;">Ingin merasakan langsung atau ambil di tempat?</p>
-      <a href="/mitra" class="btn-mitra-luxury">
-        Cek Lokasi Mitra 📍
-      </a>
+    <div class="mitra-cta">
+      <p>Ingin merasakan langsung atau ambil di tempat?</p>
+      <a href="/mitra" class="btn-mitra-luxury">Cek Lokasi Mitra 📍</a>
     </div>
   </section>
 
+  {produkBaru && (
+    <div id="newProductModal" class="modal-overlay">
+      <div class="modal-card">
+        <button id="closeModal">&times;</button>
+        <span class="gold-label">New Arrival</span>
+        <h2>{produkBaru.nama} Telah Hadir!</h2>
+        <p>Penasaran dengan rahasia rasa terbaru dari Lakoffie? Yuk, jadi yang pertama mencicipi!</p>
+        <a href={`/produk/${produkBaru.slug}`} class="btn-gold-modal">Lihat Produk Baru</a>
+      </div>
+    </div>
+  )}
+
 </MainLayout>
+
+<script is:inline>
+  // Logic Pop-up Otomatis
+  window.addEventListener('load', () => {
+    const hasSeenPopup = sessionStorage.getItem('seenNewProduct');
+    
+    if (!hasSeenPopup) {
+      setTimeout(() => {
+        const modal = document.getElementById('newProductModal');
+        if (modal) modal.style.display = 'flex';
+      }, 4000);
+    }
+  });
+
+  document.getElementById('closeModal')?.addEventListener('click', () => {
+    document.getElementById('newProductModal').style.display = 'none';
+    sessionStorage.setItem('seenNewProduct', 'true');
+  });
+</script>

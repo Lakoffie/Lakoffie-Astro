@@ -243,3 +243,166 @@
   /* Hilangkan scrollbar tapi tetap bisa di-scroll */
   .wilayah-filter::-webkit-scrollbar { display: none; }
 }
+/* --- DETAIL MITRA PREMIUM (Matching Product Style) --- */
+
+.detail-mitra {
+  padding: 120px 0 80px;
+  background: radial-gradient(circle at top right, #1a1815 0%, #0c0b0a 100%);
+  color: #fff;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Breadcrumb - Tidak biru, tapi soft gray ke emas */
+.breadcrumb {
+  margin-bottom: 2.5rem;
+}
+.breadcrumb a {
+  text-decoration: none;
+  color: #666;
+  font-size: 0.9rem;
+  transition: 0.3s ease;
+  display: inline-block;
+}
+.breadcrumb a:hover {
+  color: var(--gold);
+  transform: translateX(-5px);
+}
+
+/* Grid Layout */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+/* Image Handling - Semirip tampilan produk */
+.detail-image {
+  position: relative;
+  background: #161412;
+  border-radius: 15px;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+.detail-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  display: block;
+  object-fit: cover;
+  transition: 0.5s ease;
+}
+.detail-image:hover img {
+  transform: scale(1.03);
+}
+
+/* Info Side */
+.detail-info .badge {
+  background: rgba(212, 175, 55, 0.1);
+  color: var(--gold);
+  padding: 6px 15px;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+
+.detail-info h1 {
+  font-family: serif;
+  font-size: 3rem;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.1;
+}
+
+/* Location Box - Sentuhan Soft Selling */
+.location-box {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 2rem;
+  border-radius: 12px;
+  border-left: 3px solid var(--gold);
+  margin-bottom: 2.5rem;
+}
+
+.location-box .wilayah {
+  color: var(--gold);
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.location-box .alamat {
+  color: #aaa;
+  line-height: 1.6;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.btn-primary {
+  background: var(--gold);
+  color: #000;
+  text-decoration: none;
+  text-align: center;
+  padding: 1.2rem;
+  font-weight: bold;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: 0.3s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #fff;
+  text-decoration: none;
+  text-align: center;
+  padding: 1.1rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: 0.3s;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive Mobile */
+@media (max-width: 768px) {
+  .detail-mitra {
+    padding: 100px 0 60px;
+  }
+  .grid-detail {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .detail-info h1 {
+    font-size: 2.2rem;
+  }
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
