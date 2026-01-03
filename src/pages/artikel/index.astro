@@ -1,7 +1,16 @@
 ---
+// src/pages/artikel/index.astro
+import { getCollection } from 'astro:content';
 import MainLayout from '../../layouts/MainLayout.astro';
-import { daftarArtikel } from '../../data/artikel.ts';
 import '../../styles/artikel.css';
+
+// 1. Ambil semua artikel dari folder src/content/artikel/
+const semuaArtikel = await getCollection('artikel');
+
+// 2. Urutkan dari yang terbaru
+const sortedArtikel = semuaArtikel.sort((a, b) => 
+  b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
 
 const categories = ['Semua', 'Tips', 'Edukasi', 'Trending'];
 ---
@@ -9,49 +18,38 @@ const categories = ['Semua', 'Tips', 'Edukasi', 'Trending'];
 <MainLayout title="Artikel Lakoffie | Inspirasi Kopi Murni">
   <div class="article-page-wrapper">
     
-    <div class="container" style="padding: 60px 0 30px; text-align: center;">
-      <span style="color: var(--gold); letter-spacing: 5px; font-size: 0.7rem; text-transform: uppercase;">The Coffee Journal</span>
-      <h1 style="font-family: serif; font-size: 3rem; margin-top: 10px;">Inspirasi & <span style="color: var(--gold)">Edukasi</span></h1>
+    <div class="container" style="padding: 80px 0 40px; text-align: center;">
+      <span style="color: var(--gold); letter-spacing: 5px; font-size: 0.7rem; text-transform: uppercase; display: block; margin-bottom: 10px;">The Coffee Journal</span>
+      <h1 style="font-family: serif; font-size: clamp(2rem, 5vw, 3.5rem); margin-top: 10px;">Inspirasi & <span style="color: var(--gold)">Edukasi</span></h1>
+      <p style="color: #888; max-width: 600px; margin: 20px auto 0;">Menjelajahi dunia kopi dari hulu hingga ke cangkir Anda. Temukan tips menyeduh dan cerita di balik setiap biji kopi.</p>
     </div>
-
-    <section class="artikel-hero">
-      <div class="slider-container">
-        <div class="slider-track">
-          {daftarArtikel.map((a) => (
-            <div class="slide">
-              <img src={a.image} alt={a.judul} />
-              <div class="slide-overlay">
-                <span class="tag">{a.kategori}</span>
-                <h2>{a.judul}</h2>
-                <a href={`/artikel/${a.slug}`} class="btn-read">Baca Selengkapnya</a>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
 
     <div class="container">
       <div class="blog-controls">
         <div class="tabs">
           {categories.map(cat => (
-            <button class="tab-btn" data-category={cat}>{cat}</button>
+            <button class="tab-btn {cat === 'Semua' ? 'active' : ''}" data-category={cat}>{cat}</button>
           ))}
         </div>
-        <input type="text" id="searchBlog" placeholder="Cari judul atau topik..." />
+        <div class="search-wrapper">
+           <input type="text" id="searchBlog" placeholder="Cari judul atau topik..." />
+        </div>
       </div>
 
       <div class="blog-grid" id="blogGrid">
-        {daftarArtikel.map(a => (
-          <article class="blog-card" data-category={a.kategori}>
+        {sortedArtikel.map(a => (
+          <article class="blog-card" data-category={a.data.tags[0]}>
             <div class="blog-img">
-              <img src={a.image} alt={a.judul} loading="lazy" />
+              <img src={a.data.image} alt={a.data.alt} loading="lazy" />
+              <div class="card-tag">{a.data.tags[0]}</div>
             </div>
             <div class="blog-content">
-              <span class="blog-date">{a.tanggal} • {a.kategori}</span>
-              <h3>{a.judul}</h3>
-              <p>{a.excerpt}</p>
-              <a href={`/artikel/${a.slug}`} class="read-link">Read Story →</a>
+              <span class="blog-date">
+                {a.data.pubDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+              </span>
+              <h3>{a.data.title}</h3>
+              <p>{a.data.description}</p>
+              <a href={`/artikel/${a.slug}`} class="read-link">Baca Selengkapnya →</a>
             </div>
           </article>
         ))}
@@ -70,7 +68,8 @@ const categories = ['Semua', 'Tips', 'Edukasi', 'Trending'];
     const val = searchInput.value.toLowerCase();
     cards.forEach(card => {
       const title = card.querySelector('h3')?.innerText.toLowerCase() || '';
-      card.style.display = title.includes(val) ? 'block' : 'none';
+      const desc = card.querySelector('p')?.innerText.toLowerCase() || '';
+      card.style.display = (title.includes(val) || desc.includes(val)) ? 'block' : 'none';
     });
   });
 
@@ -79,7 +78,6 @@ const categories = ['Semua', 'Tips', 'Edukasi', 'Trending'];
     btn.addEventListener('click', () => {
       const selectedCat = (btn as HTMLElement).dataset.category?.toLowerCase();
       
-      // Update Active UI
       tabBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
 

@@ -8,6 +8,7 @@ export const daftarMitra: Mitra[] = [
     alamat: 'Padaan, Kec. Pabelan, Kabupaten Semarang',
     gmaps: 'https://maps.app.goo.gl/sKmGccVqNwDFvWz79?g_st=ac',
     image: '/img/mitra/cafe1.jpg',
+    alt: 'warung kopi lakoffie - tempat asik nikmati seduhan kopi murni kualitas premium',
     lat: -7.280827,
     lng: 110.523860 // SUDAH BENAR
   },
@@ -19,6 +20,7 @@ export const daftarMitra: Mitra[] = [
     kecamatan: 'Sidorejo',
     jenis: 'Toko',
     image: '/img/mitra/minimarket-asa.png',
+    alt: 'minimarket asa - belanja praktis kopi lakoffie berbagai varian rasa premium',
     gmaps: 'https://maps.app.goo.gl/Q6D3kbQQeQziaieV6?g_st=ac',
     lat: -7.3305,
     lng: 110.5084 // SUDAH BENAR
@@ -31,6 +33,7 @@ export const daftarMitra: Mitra[] = [
     kecamatan: 'Sidorejo',
     jenis: 'Toko',
     image: '/img/mitra/warung-bu-solekah.png',
+    alt: 'toko solekah - tempat beli kopi lakoffie murni nendang body kental harga hemat',
     gmaps: 'https://maps.app.goo.gl/8WpZ2RZDLrAdjMF27?g_st=ac',
     lat: -7.3201627,
     lng: 110.5062782 // PERBAIKAN: ling -> lng
@@ -43,6 +46,7 @@ export const daftarMitra: Mitra[] = [
     kecamatan: 'Sidorejo',
     jenis: 'Toko',
     image: '/img/mitra/toko-joko.png',
+    alt: 'toko joko - sedia stok kopi lakoffie gula aren premium untuk kebutuhan harian',
     gmaps: 'https://maps.app.goo.gl/CWyYgPUSrw4JCVdS8?g_st=ac',
     lat: -7.3127193,
     lng: 110.5009463 // PERBAIKAN: ling -> lng
@@ -55,6 +59,7 @@ export const daftarMitra: Mitra[] = [
     kecamatan: 'Sidorejo',
     jenis: 'Toko',
     image: '/img/mitra/toko-fann.png',
+    alt: 'toko fann - mitra lakoffie spesialis kopi bubuk murni kualitas signature series',
     gmaps: 'https://maps.app.goo.gl/Gdwi3L5mWcn4nFEj6?g_st=ac',
     lat: -7.2808162,
     lng: 110.5237892 // PERBAIKAN: ling -> lng
@@ -67,6 +72,7 @@ export const daftarMitra: Mitra[] = [
     kecamatan: 'Sidorejo',
     jenis: 'Toko',
     image: '/img/mitra/warung-madura-aksa-husein.png',
+    alt: 'warung madura aksa & husein - sedia kopi lakoffie murni praktis siap seduh',
     gmaps: 'https://maps.app.goo.gl/gWgPRjc9uXsMDpgY6?g_st=ac',
     lat: -7.2807647,
     lng: 110.5236580 // PERBAIKAN: ling -> lng
@@ -79,6 +85,7 @@ export const daftarMitra: Mitra[] = [
     kecamatan: 'Pabelan',
     jenis: 'Toko',
     image: '/img/mitra/toko-bu-harni.png',
+    alt: 'toko bu harni - sedia berbagai varian kopi murni lakoffie aroma gula jawa asli',
     gmaps: 'https://maps.app.goo.gl/oq34WN4KFJaq9LNA9?g_st=ac',
     lat: -7.2810673,
     lng: 110.5237625 // PERBAIKAN: ling -> lng
@@ -91,6 +98,7 @@ export const daftarMitra: Mitra[] = [
     kecamatan: 'Pabelan',
     jenis: 'Toko',
     image: '/img/mitra/warung-bu-darsih.png',
+    alt: 'toko bu darsih - distributor kopi bubuk lakoffie robusta temanggung dan lampung',
     gmaps: 'https://maps.app.goo.gl/NqAEgKf2urRFwY4J7?g_st=ac',
     lat: -7.2807836,
     lng: 110.5237879 // PERBAIKAN: ling -> lng
@@ -115,6 +123,7 @@ export const daftarMitra: Mitra[] = [
     kecamatan: 'Pabelan',
     jenis: 'Toko',
     image: '/img/mitra/toko-indo-khafidh.png',
+    alt: 'toko indo khafidh - agen resmi kopi lakoffie pilihan nikmat rasa cafe premium',
     gmaps: 'https://maps.app.goo.gl/gB97nR3gd1k7qH9TA?g_st=ac',
     lat: -7.2807894,
     lng: 110.5237944 // PERBAIKAN: ling -> lng

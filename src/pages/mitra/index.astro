@@ -39,7 +39,7 @@ const daftarWilayah = [...new Set(daftarMitra.map(m => m.wilayah))].sort();
              data-lng={m.lng}>
           <div class="card-header">
             <span class="badge-wilayah">{m.wilayah}</span>
-            <img src={m.image} alt={m.nama} loading="lazy" />
+            <img src={m.image} alt={m.alt || `Lokasi Toko Mitra Lakoffie di ${m.kota}`} loading="lazy" />
           </div>
           <div class="card-body">
             <span class="jenis-tag">{m.jenis}</span>

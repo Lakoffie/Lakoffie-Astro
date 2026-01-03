@@ -1,56 +1,74 @@
 ---
 // src/pages/artikel/[slug].astro
+import { getCollection } from 'astro:content';
 import MainLayout from '../../layouts/MainLayout.astro';
-import { daftarArtikel } from '../../data/artikel.ts'; 
 import '../../styles/artikel.css';
 
 export async function getStaticPaths() {
-  return daftarArtikel.map((art, index) => {
+  const semuaArtikel = await getCollection('artikel');
+  
+  const urutanArtikel = semuaArtikel.sort((a, b) => 
+    b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+  );
+
+  return urutanArtikel.map((entry, index) => {
     return {
-      params: { slug: art.slug },
+      params: { slug: entry.slug },
       props: { 
-        art, 
-        prev: daftarArtikel[index - 1] || null, 
-        next: daftarArtikel[index + 1] || null 
+        entry, 
+        prev: urutanArtikel[index + 1] || null,
+        next: urutanArtikel[index - 1] || null 
       },
     };
   });
 }
 
-const { art, prev, next } = Astro.props;
+const { entry, prev, next } = Astro.props;
+const { Content } = await entry.render();
 ---
 
-<MainLayout title={art.judul}>
-  <article class="single-post">
+<MainLayout title={entry.data.title}>
+  <div class="reading-line"></div>
+
+  <article class="single-post-luxury">
     <div class="container-small">
-      <header class="post-header">
-        <span class="category-badge">{art.kategori}</span>
-        <h1>{art.judul}</h1>
-        <p class="date">Diterbitkan pada {art.tanggal}</p>
+      <header class="post-header-pro">
+        <div class="meta-top">
+          <span class="category-pill">{entry.data.tags[0] || "Edukasi"}</span>
+          <span class="read-time">Estimasi 3 Menit Baca</span>
+        </div>
+        <h1 class="glare-text">{entry.data.title}</h1>
+        <div class="post-info">
+          <span class="author">Oleh <strong>{entry.data.author}</strong></span>
+          <span class="separator">|</span>
+          <span class="date">{entry.data.pubDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+        </div>
       </header>
       
-      <div class="image-wrapper">
-        <img src={art.image} alt={art.judul} class="featured-image" />
+      <div class="featured-image-wrapper">
+        <img src={entry.data.image} alt={entry.data.alt} class="featured-image" />
       </div>
       
-      <div class="post-body">
-        {art.konten}
+      <div class="post-body-content">
+        <Content />
       </div>
 
-      <div class="article-hook">
-        <h3>Nikmati Kopi Murni di Rumah</h3>
-        <p>{art.ctaText || "Tertarik mencoba sensasi kopi yang kami ceritakan di atas?"}</p>
-        <a href="https://wa.me/6285175285640" class="btn-wa-action">
-           Pesan Lakoffie Sekarang
-        </a>
+      <div class="luxury-hook">
+        <div class="hook-content">
+          <h3>Ingin Merasakan Karakter Aslinya?</h3>
+          <p>Setiap biji kopi Lakoffie diproses untuk mempertahankan kejujuran rasa dari tanah asalnya.</p>
+          <a href="https://wa.me/6285175285640" class="btn-wa-premium">
+             Konsultasi Rasa via WhatsApp
+          </a>
+        </div>
       </div>
 
       <nav class="post-nav">
         <div class="nav-box">
           {prev ? (
             <a href={`/artikel/${prev.slug}`} class="nav-item">
-              <span>← Sebelumnya</span>
-              <p>{prev.judul}</p>
+              <span class="nav-dir">← ARTIKEL LAMA</span>
+              <p>{prev.data.title}</p>
             </a>
           ) : (
             <div class="empty-nav"></div>
@@ -58,8 +76,8 @@ const { art, prev, next } = Astro.props;
 
           {next ? (
             <a href={`/artikel/${next.slug}`} class="nav-item next">
-              <span>Selanjutnya →</span>
-              <p>{next.judul}</p>
+              <span class="nav-dir">ARTIKEL BARU →</span>
+              <p>{next.data.title}</p>
             </a>
           ) : (
             <div class="empty-nav"></div>
@@ -67,7 +85,7 @@ const { art, prev, next } = Astro.props;
         </div>
         
         <div class="footer-nav">
-          <a href="/artikel" class="back-home">Kembali ke Daftar Artikel</a>
+          <a href="/artikel" class="back-home">Lihat Koleksi Artikel Lainnya</a>
         </div>
       </nav>
     </div>
