@@ -63,7 +63,7 @@ export const varianKopi: Kopi[] = [
     karakter: 'Kopi Murni Plus Gula Aren', 
     harga: 'Rp 25.000', 
     hargaPromo: 'Rp 20.000',
-    image: '/img/lakoffie-aren-signature.png',
+    image: '/img/lakoffie-gula-aren.jpg',
     isNew: false,
     deskripsi: 'Lebih dari sekadar manis, varian ini adalah jawaban kalian yang melek kesehatan namun tak ingin kehilangan momen ngopi. Menggunakan gula aren murni sebagai pemanis alami yang lebih kaya mineral dan memiliki indeks glikemik lebih rendah dibanding gula pasir biasa. Perpaduan sempurna antara espresso bold dengan legitnya aren, memberikan energi yang lebih stabil tanpa rasa bersalah.'
 }
