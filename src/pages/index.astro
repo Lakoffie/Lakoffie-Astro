@@ -107,7 +107,7 @@ const produkBaru = varianKopi.find(k => k.isNew);
           {v.hargaPromo && <div class="promo-ribbon">PROMO</div>}
           
           <div class="card-image">
-             <img src={v.image} alt={v.nama} />
+             <img src={v.image} alt={v.alt} />
              <div class="pure-badge">100% Pure</div>
           </div>
 
@@ -166,7 +166,7 @@ const produkBaru = varianKopi.find(k => k.isNew);
       
       <div class="modal-grid">
         <div class="modal-visual">
-          <img src={produkBaru.image} alt={produkBaru.nama} class="modal-img" />
+          <img src={produkBaru.image} alt={produkBaru.alt} class="modal-img" />
           <div class="visual-overlay"></div>
         </div>
         

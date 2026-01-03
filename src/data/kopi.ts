@@ -20,6 +20,7 @@ export const varianKopi: Kopi[] = [
     harga: 'Rp 18.000', 
     hargaPromo: 'Rp 15.000', 
     image: '/img/lakoffie-robusta-temanggung.png',
+    alt: 'Kopi Robusta Temanggung Lakoffie - Biji Kopi Pahit dengan Aroma Khas Gula Jawa Asli',
     isNew: true,
     deskripsi: 'Dipanen dari kawasan temanggung,Robusta kami menawarkan sensasi gula jawa alami dengan tingkat kekentalan (body) yang mantap. Cocok bagi Anda penikmat kopi susu atau kopi hitam yang kuat tanpa rasa asam berlebih.'
   },
@@ -31,6 +32,7 @@ export const varianKopi: Kopi[] = [
     harga: 'Rp 18.000', 
     hargaPromo: 15000,
     image: '/img/lakoffie-lokal-salatiga.png',
+    alt: 'Kopi Lokal Salatiga Lakoffie - Perpaduan Rasa Pahit dan Sensasi Asam Segar Khas Pegunungan',
     isNew: false,
     deskripsi: 'Satu varian biji kopi asli sekitar salatiga, menawarkan rasa pahit yang seimbang dengan sentuhan akhir asam yang tersembunyi di akhir sesapan, menjadikannya pilihan sempurna untuk metode seduh manual (V60) atau pecinta kopi hitam ringan.'
   },
@@ -42,6 +44,7 @@ export const varianKopi: Kopi[] = [
     harga: 'Rp 18.000', 
     hargaPromo: 'Rp 15.000',
     image: '/img/lakoffie-robusta-lampung.png',
+    alt: 'Kopi Lokal Salatiga Lakoffie - Perpaduan Rasa Pahit dan Sensasi Asam Segar Khas Pegunungan',
     isNew: true,
     deskripsi: 'Representasi sejati dari tanah Lampung untuk penikmat kopi yang mencari intensitas maksimal. Hadir dengan body yang sangat kental dan sensasi pahit "nendang" tanpa basa-basi, ditutup dengan aroma earthy yang pekat. Inilah pilihan mutlak bagi pejuang kafein atau campuran base susu yang ingin karakter kopinya tetap dominan.'
 },
@@ -53,6 +56,7 @@ export const varianKopi: Kopi[] = [
     harga: 'Rp 30.000', 
     hargaPromo: 'Rp 20.000',
     image: '/img/lakoffie-cold-brew.jpg',
+    alt: 'Lakoffie Cold Brew Coffee - Kopi Kantong Praktis Tanpa Ampas Segar dan Nikmat',
     isNew: true,
     deskripsi: 'Solusi es kopi susu ala cafe dari dapur sendiri tanpa perlu alat seduh rumit. Menggunakan teknologi kantong celup khusus yang menjamin hasil seduhan bersih tanpa ampas (zero residue), namun tetap menghasilkan ekstrak kopi hitam yang bold dan kental. Cukup rendam semalam, tambahkan susu favorit, dan nikmati kesegaran kopi premium dengan cara paling efisien.'
 },
@@ -64,6 +68,7 @@ export const varianKopi: Kopi[] = [
     harga: 'Rp 25.000', 
     hargaPromo: 'Rp 20.000',
     image: '/img/lakoffie-gula-aren.jpg',
+    alt: 'Lakoffie Gula Aren Premium - Perpaduan Kopi Bubuk Lampung dan Manisnya Gula Aren Semut',
     isNew: false,
     deskripsi: 'Lebih dari sekadar manis, varian ini adalah jawaban kalian yang melek kesehatan namun tak ingin kehilangan momen ngopi. Menggunakan gula aren murni sebagai pemanis alami yang lebih kaya mineral dan memiliki indeks glikemik lebih rendah dibanding gula pasir biasa. Perpaduan sempurna antara espresso bold dengan legitnya aren, memberikan energi yang lebih stabil tanpa rasa bersalah.'
 }
