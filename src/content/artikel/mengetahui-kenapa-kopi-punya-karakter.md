@@ -1,5 +1,5 @@
 ---
-title: "Kenapa Kopi Punya Karakter Rasa yang Berbeda? Membedah Rahasia Terroir"
+title: "Mengetahui Kenapa Kopi Punya Karakter Unik"
 description: "Pernahkah Master bertanya kenapa kopi Temanggung beraroma gula jawa sedangkan kopi Lampung begitu bold? Mari bedah rahasianya di sini."
 pubDate: 2024-05-23
 author: "Master Lakoffie"
