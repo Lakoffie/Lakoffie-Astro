@@ -1,24 +1,23 @@
 import type { APIRoute } from 'astro';
 import { createClient } from '@supabase/supabase-js';
 
-export const POST: APIRoute = async ({ request }) => {
+export const DELETE: APIRoute = async ({ request }) => {
   const supabase = createClient(
     import.meta.env.SUPABASE_URL,
     import.meta.env.SUPABASE_ANON_KEY
   );
 
   try {
-    const data = await request.json();
+    const { id } = await request.json();
 
-    // UPSERT: Jika ada ID maka UPDATE, jika tidak ada ID maka INSERT
-    const { data: result, error } = await supabase
+    const { error } = await supabase
       .from('transaksi')
-      .upsert(data)
-      .select();
+      .delete()
+      .eq('id', id);
 
     if (error) throw error;
 
-    return new Response(JSON.stringify(result), { status: 200 });
+    return new Response(JSON.stringify({ message: 'Terhapus' }), { status: 200 });
   } catch (err: any) {
     return new Response(JSON.stringify({ error: err.message }), { status: 500 });
   }
