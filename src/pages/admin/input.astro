@@ -1,0 +1,212 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import { createClient } from '@supabase/supabase-js';
+
+// 1. KONEKSI SERVER-SIDE (Mengambil data saat halaman di-load)
+const supabase = createClient(
+  import.meta.env.SUPABASE_URL,
+  import.meta.env.SUPABASE_ANON_KEY
+);
+
+const { data: dataSupabase, error } = await supabase
+  .from('transaksi')
+  .select('*')
+  .order('tanggal', { ascending: false });
+
+if (error) {
+  console.error("Gagal ambil data Supabase:", error.message);
+}
+
+const dataTransaksiServer = dataSupabase || [];
+---
+
+<MainLayout title="Pencatatan Keuangan Harian | Lakoffie Admin">
+  <section class="finance-input-page">
+    <div class="container-small">
+      <div class="header-box">
+        <h1>Buku Kas <span class="gold-text">Lakoffie</span></h1>
+        <p>Detail Transaksi Harian</p>
+      </div>
+
+      <form class="finance-form" id="transactionForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>1. Tanggal</label>
+            <input type="date" id="tanggal" name="tanggal" required />
+          </div>
+
+          <div class="form-group">
+            <label>2. Keterangan</label>
+            <input type="text" id="keterangan" name="keterangan" placeholder="Contoh: Jual 5 Pcs Arabica" required />
+          </div>
+
+          <div class="form-group">
+            <label>3. Jenis Transaksi</label>
+            <select id="jenis" name="jenis">
+              <option value="Penjualan">Penjualan</option>
+              <option value="HPP">HPP (Bahan Baku)</option>
+              <option value="Operasional">Operasional (Listrik/Gaji)</option>
+              <option value="Aset">Aset (Alat Kopi)</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>4. Uang Masuk (Rp)</label>
+              <input type="number" id="masuk" name="masuk" value="0" />
+            </div>
+            <div class="form-group">
+              <label>5. Uang Keluar (Rp)</label>
+              <input type="number" id="keluar" name="keluar" value="0" />
+            </div>
+          </div>
+        </div>
+
+        <button type="button" id="addBtn" class="btn-gold">Simpan Transaksi</button>
+      </form>
+
+      <div class="recap-section">
+        <h2>6. Rekap Transaksi</h2>
+        <div class="table-wrapper">
+          <div id="data-store" data-json={JSON.stringify(dataTransaksiServer)}></div>
+          
+          <table id="logTable">
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Keterangan</th>
+                <th>Jenis</th>
+                <th>Masuk</th>
+                <th>Keluar</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+            <tfoot>
+              <tr class="total-row">
+                <td colspan="3">TOTAL KESELURUHAN</td>
+                <td id="totalMasuk">Rp 0</td>
+                <td id="totalKeluar">Rp 0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</MainLayout>
+
+<script>
+  // AMBIL DATA DARI JEMBATAN
+  const dataStore = document.getElementById('data-store');
+  let dataTransaksi = JSON.parse(dataStore?.getAttribute('data-json') || '[]');
+
+  const addBtn = document.getElementById('addBtn');
+  const tableBody = document.getElementById('tableBody');
+  const totalMasukEl = document.getElementById('totalMasuk');
+  const totalKeluarEl = document.getElementById('totalKeluar');
+
+  // Munculkan data saat pertama kali buka
+  updateTable();
+
+  addBtn?.addEventListener('click', async () => {
+    const btn = addBtn as HTMLButtonElement;
+    
+    // 1. Ambil data dari form
+    const trx = {
+      tanggal: (document.getElementById('tanggal') as HTMLInputElement).value,
+      keterangan: (document.getElementById('keterangan') as HTMLInputElement).value,
+      jenis: (document.getElementById('jenis') as HTMLSelectElement).value,
+      masuk: parseFloat((document.getElementById('masuk') as HTMLInputElement).value) || 0,
+      keluar: parseFloat((document.getElementById('keluar') as HTMLInputElement).value) || 0,
+    };
+
+    if(!trx.tanggal || !trx.keterangan) return alert("Woi Master, tanggal dan keterangan harus diisi!");
+
+    // Status loading
+    btn.innerText = "Mengirim...";
+    btn.disabled = true;
+
+    try {
+      // 2. Kirim ke Tukang Pos (API Route)
+      const response = await fetch('/api/save-transaction', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(trx)
+      });
+
+      if (response.ok) {
+        alert("✅ Joss! Tersimpan di Supabase.");
+        
+        // Update tampilan lokal tanpa reload (hemat kuota)
+        dataTransaksi.unshift(trx); // Masukkan ke urutan paling atas
+        updateTable();
+
+        // Reset Form
+        (document.getElementById('keterangan') as HTMLInputElement).value = '';
+        (document.getElementById('masuk') as HTMLInputElement).value = '0';
+        (document.getElementById('keluar') as HTMLInputElement).value = '0';
+      } else {
+        const errorData = await response.json();
+        alert("❌ Database nolak: " + errorData.message);
+      }
+    } catch (err) {
+      alert("❌ Gagal menghubungi API. Pastikan npm run dev jalan!");
+    } finally {
+      btn.innerText = "Simpan Transaksi";
+      btn.disabled = false;
+    }
+  });
+
+  function updateTable() {
+    if (!tableBody || !totalMasukEl || !totalKeluarEl) return;
+    
+    tableBody.innerHTML = '';
+    let tMasuk = 0;
+    let tKeluar = 0;
+
+    // Sortir: Paling baru di atas
+    const sortedData = [...dataTransaksi].sort((a, b) => new Date(b.tanggal).getTime() - new Date(a.tanggal).getTime());
+
+    sortedData.forEach(t => {
+      tMasuk += (Number(t.masuk) || 0);
+      tKeluar += (Number(t.keluar) || 0);
+      
+      tableBody.innerHTML += `
+        <tr>
+          <td>${t.tanggal}</td>
+          <td>${t.keterangan}</td>
+          <td>${t.jenis}</td>
+          <td class="text-green">Rp ${Number(t.masuk).toLocaleString('id-ID')}</td>
+          <td class="text-red">Rp ${Number(t.keluar).toLocaleString('id-ID')}</td>
+        </tr>`;
+    });
+
+    totalMasukEl.innerText = `Rp ${tMasuk.toLocaleString('id-ID')}`;
+    totalKeluarEl.innerText = `Rp ${tKeluar.toLocaleString('id-ID')}`;
+  }
+</script>
+
+<style>
+  .finance-input-page { background: #0a0a0a; color: white; padding: 60px 0; min-height: 100vh; }
+  .container-small { max-width: 800px; margin: 0 auto; padding: 0 20px; }
+  .header-box { text-align: center; margin-bottom: 30px; }
+  .gold-text { color: var(--gold); }
+  .finance-form { background: #111; padding: 25px; border-radius: 15px; border: 1px solid #333; margin-bottom: 40px; }
+  .form-group { margin-bottom: 15px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+  label { display: block; font-size: 0.8rem; color: #888; margin-bottom: 5px; }
+  input, select { width: 100%; padding: 12px; background: #222; border: 1px solid #444; color: white; border-radius: 8px; outline: none; }
+  input:focus { border-color: var(--gold); }
+  .btn-gold { width: 100%; padding: 15px; background: var(--gold); border: none; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; color: black; transition: 0.3s; }
+  .btn-gold:hover { background: #d4a017; transform: translateY(-2px); }
+  .btn-gold:disabled { background: #555; cursor: not-allowed; transform: none; }
+  .recap-section h2 { margin-bottom: 20px; font-family: serif; color: var(--gold); }
+  .table-wrapper { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; background: #111; border-radius: 10px; }
+  th, td { padding: 15px; text-align: left; border-bottom: 1px solid #222; font-size: 0.9rem; }
+  th { background: #1a1a1a; color: var(--gold); font-size: 0.75rem; text-transform: uppercase; }
+  .total-row { background: #1a1a1a; font-weight: bold; color: var(--gold); }
+  .text-green { color: #4ade80; }
+  .text-red { color: #f87171; }
+  #data-store { display: none; }
+</style>

@@ -1,0 +1,49 @@
+import type { APIRoute } from 'astro';
+import { createClient } from '@supabase/supabase-js';
+
+// Mengambil kunci dari .env
+const supabaseUrl = import.meta.env.SUPABASE_URL;
+const supabaseKey = import.meta.env.SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+export const POST: APIRoute = async ({ request }) => {
+  try {
+    const data = await request.json();
+
+    // Validasi input minimal
+    if (!data.tanggal || !data.keterangan) {
+      return new Response(JSON.stringify({ message: "Data tidak lengkap, Master!" }), { status: 400 });
+    }
+
+    // Mengirim ke tabel 'transaksi' di Supabase
+    // Jika kolom ID di Supabase diset sebagai 'int8', timestamp ini akan masuk dengan aman
+    const { error } = await supabase
+      .from('transaksi')
+      .insert([
+        {
+          id: data.id || Date.now(), // Gunakan ID dari input, jika kosong otomatis pakai timestamp sekarang
+          tanggal: data.tanggal,
+          keterangan: data.keterangan,
+          jenis: data.jenis,
+          masuk: Number(data.masuk) || 0,
+          keluar: Number(data.keluar) || 0
+        }
+      ]);
+
+    if (error) throw error;
+
+    return new Response(JSON.stringify({ message: "Data Berhasil Masuk Database!" }), { 
+      status: 200,
+      headers: { "Content-Type": "application/json" }
+    });
+
+  } catch (error: any) {
+    // Log ini akan muncul di Termux Master
+    console.error("ERROR SUPABASE:", error.message);
+    
+    return new Response(JSON.stringify({ message: "Gagal: " + error.message }), { 
+      status: 500,
+      headers: { "Content-Type": "application/json" }
+    });
+  }
+};
