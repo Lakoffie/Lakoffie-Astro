@@ -15,26 +15,32 @@ const { data: dataSupabase } = await supabase
 const dataTransaksiServer = dataSupabase || [];
 ---
 
-<MainLayout title="Master Finance | Lakoffie">
-  <section class="admin-page">
-    <div class="container">
-      
-      <div class="header-section">
-        <h1>Buku Kas <span class="gold">Lakoffie</span></h1>
-        <p>Manajemen & Analitik Keuangan</p>
-      </div>
+<MainLayout title="Finance | Lakoffie">
+  <link rel="stylesheet" href="/src/styles/admin.css" />
 
-      <div class="recap-container">
-        <div class="recap-card"><span class="label">Total Masuk</span><h2 id="totalMasuk" class="amount text-green">0</h2></div>
-        <div class="recap-card"><span class="label">Total Keluar</span><h2 id="totalKeluar" class="amount text-red">0</h2></div>
-        <div class="recap-card highlight"><span class="label">Saldo Filter</span><h2 id="totalSaldo" class="amount gold">0</h2></div>
-      </div>
+  <section class="admin-container">
+    
+    <nav class="admin-nav">
+        <a href="/admin/input" class="nav-link active">💰 Keuangan</a>
+        <a href="/admin/stok" class="nav-link">📦 Stok & Produksi</a>
+        <a href="/admin/arsip" class="nav-link active">📁 Arsip PDF</a>
+    </nav>
 
-      <details class="glass-card">
-        <summary>➕ Input Transaksi Baru</summary>
-        <div id="formContainer" style="margin-top:15px">
-            <input type="hidden" id="editId" value="" />
-            <div class="form-layout">
+    <div class="header-section" style="text-align: center; margin-bottom: 20px;">
+      <h1>Buku Kas <span class="gold">Lakoffie</span></h1>
+    </div>
+
+    <div class="recap-grid">
+      <div class="recap-card"><span class="label">Total Masuk</span><h2 id="totalMasuk" class="text-green">0</h2></div>
+      <div class="recap-card"><span class="label">Total Keluar</span><h2 id="totalKeluar" class="text-red">0</h2></div>
+      <div class="recap-card highlight"><span class="label">Saldo</span><h2 id="totalSaldo" class="gold">0</h2></div>
+    </div>
+
+    <details class="glass-card">
+      <summary>➕ Input Transaksi Baru</summary>
+      <div id="formContainer" style="margin-top:20px">
+          <input type="hidden" id="editId" value="" />
+          <div class="form-grid">
             <div class="form-item"><label>Tanggal</label><input type="date" id="tanggal" required /></div>
             <div class="form-item"><label>Jenis</label>
                 <select id="jenis">
@@ -46,64 +52,61 @@ const dataTransaksiServer = dataSupabase || [];
                 <option value="Aset">🛠️ Alat & Aset</option>
                 </select>
             </div>
-            <div class="form-item full"><label>Keterangan</label><input type="text" id="keterangan" placeholder="Nama transaksi..." /></div>
+            <div class="form-item full"><label>Keterangan</label><input type="text" id="keterangan" placeholder="Contoh: Beli Susu" /></div>
             <div class="form-item"><label>Masuk (Rp)</label><input type="number" id="masuk" value="0" /></div>
             <div class="form-item"><label>Keluar (Rp)</label><input type="number" id="keluar" value="0" /></div>
-            </div>
-            <div class="btn-group">
-            <button type="button" onclick="prosesSimpan()" id="btnSimpan" class="btn-primary">SIMPAN</button>
-            <button type="button" onclick="cancelEdit()" id="btnCancel" class="btn-cancel" style="display:none;">BATAL</button>
-            </div>
-        </div>
-      </details>
-
-      <div class="filter-card">
-        <h3>🔍 Filter & Download</h3>
-        <div class="filter-grid">
-          <div class="filter-item">
-            <label>Rentang Tanggal</label>
-            <div class="date-range">
-              <input type="date" id="filterStart" onchange="updateTampilan()" />
-              <span>ke</span>
-              <input type="date" id="filterEnd" onchange="updateTampilan()" />
-            </div>
           </div>
-          <div class="filter-item">
-            <label>Kategori</label>
-            <select id="filterJenis" onchange="updateTampilan()">
-              <option value="Semua">Semua Kategori</option>
-              <option value="Pemasukan">Hanya Pemasukan</option>
-              <option value="Pengeluaran">Hanya Pengeluaran</option>
-              <option value="Penjualan Tunai">Penjualan Tunai</option>
-              <option value="Piutang">Piutang</option>
-              <option value="HPP">HPP</option>
-              <option value="Operasional">Operasional</option>
-              <option value="Pinjaman">Pinjaman</option>
-            </select>
+          <div style="display: flex; gap: 10px;">
+            <button type="button" onclick="prosesSimpan()" id="btnSimpan" class="btn-primary">SIMPAN DATA</button>
+            <button type="button" onclick="cancelEdit()" id="btnCancel" class="btn-primary" style="background:#333; color:#fff; display:none;">BATAL</button>
           </div>
-        </div>
-        <button onclick="downloadData()" class="btn-download">📂 Download Excel (CSV)</button>
       </div>
+    </details>
 
-      <div class="list-section">
-        <div id="data-store" data-json={JSON.stringify(dataTransaksiServer)}></div>
-        <div class="table-wrapper">
-          <table class="classic-table">
-            <thead>
-              <tr>
-                <th>Aksi</th>
-                <th>Tanggal</th>
-                <th>Keterangan</th>
-                <th>Kategori</th>
-                <th>Masuk</th>
-                <th>Keluar</th>
-              </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-          </table>
+    <div class="glass-card" style="border-color: #333;">
+      <div class="form-grid">
+        <div class="form-item">
+          <label>Dari Tanggal</label>
+          <input type="date" id="filterStart" onchange="updateTampilan()" />
+        </div>
+        <div class="form-item">
+          <label>Sampai Tanggal</label>
+          <input type="date" id="filterEnd" onchange="updateTampilan()" />
+        </div>
+        <div class="form-item full">
+          <label>Kategori Filter</label>
+          <select id="filterJenis" onchange="updateTampilan()">
+            <option value="Semua">Semua Kategori</option>
+            <option value="Pemasukan">Hanya Pemasukan</option>
+            <option value="Pengeluaran">Hanya Pengeluaran</option>
+            <option value="Penjualan Tunai">Penjualan Tunai</option>
+            <option value="Piutang">Piutang</option>
+            <option value="HPP">HPP</option>
+            <option value="Operasional">Operasional</option>
+            <option value="Pinjaman">Pinjaman</option>
+          </select>
         </div>
       </div>
+      <button onclick="downloadData()" class="btn-download">📂 Download Excel (CSV)</button>
     </div>
+
+    <div class="table-wrapper">
+      <div id="data-store" data-json={JSON.stringify(dataTransaksiServer)}></div>
+      <table>
+        <thead>
+          <tr>
+            <th>Aksi</th>
+            <th>Tanggal</th>
+            <th>Keterangan</th>
+            <th>Kategori</th>
+            <th>Masuk</th>
+            <th>Keluar</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
   </section>
 </MainLayout>
 
@@ -123,18 +126,13 @@ const dataTransaksiServer = dataSupabase || [];
     let tMasuk = 0; let tKeluar = 0;
     tableBody.innerHTML = "";
     
-    // LOGIKA FILTER
     const filteredData = dataTransaksi.filter(t => {
-      // Filter Tanggal
       const matchStart = fStart ? t.tanggal >= fStart : true;
       const matchEnd = fEnd ? t.tanggal <= fEnd : true;
-      
-      // Filter Jenis
       let matchJenis = true;
       if (fJenis === "Pemasukan") matchJenis = t.masuk > 0;
       else if (fJenis === "Pengeluaran") matchJenis = t.keluar > 0;
       else if (fJenis !== "Semua") matchJenis = t.jenis === fJenis;
-
       return matchStart && matchEnd && matchJenis;
     });
 
@@ -149,8 +147,8 @@ const dataTransaksiServer = dataSupabase || [];
             <button onclick='prepEdit(${JSON.stringify(t)})' class="btn-edit">✏️</button>
             <button onclick="hapusData(${t.id})" class="btn-delete">🗑️</button>
           </td>
-          <td>${t.tanggal}</td>
-          <td style="min-width: 150px;"><b>${t.keterangan}</b></td>
+          <td style="white-space:nowrap">${t.tanggal}</td>
+          <td><b>${t.keterangan}</b></td>
           <td><span class="badge">${t.jenis}</span></td>
           <td class="text-green">Rp ${masuk.toLocaleString()}</td>
           <td class="text-red">Rp ${keluar.toLocaleString()}</td>
@@ -158,30 +156,21 @@ const dataTransaksiServer = dataSupabase || [];
       `;
     });
 
-    // Update Angka Rekap Berdasarkan Filter
     document.getElementById('totalMasuk').innerText = `Rp ${tMasuk.toLocaleString()}`;
     document.getElementById('totalKeluar').innerText = `Rp ${tKeluar.toLocaleString()}`;
     document.getElementById('totalSaldo').innerText = `Rp ${(tMasuk - tKeluar).toLocaleString()}`;
   }
 
-  // FITUR DOWNLOAD CSV (Bisa dibuka di Excel)
   function downloadData() {
     const headers = ["Tanggal", "Keterangan", "Jenis", "Masuk", "Keluar"];
     const rows = dataTransaksi.map(t => [t.tanggal, t.keterangan, t.jenis, t.masuk, t.keluar]);
-    
-    let csvContent = "data:text/csv;charset=utf-8," 
-      + headers.join(",") + "\n"
-      + rows.map(e => e.join(",")).join("\n");
-
-    const encodedUri = encodeURI(csvContent);
+    let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + rows.map(e => e.join(",")).join("\n");
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `Laporan_Keuangan_Lakoffie_${new Date().toLocaleDateString()}.csv`);
-    document.body.appendChild(link);
+    link.setAttribute("href", encodeURI(csvContent));
+    link.setAttribute("download", `Laporan_Lakoffie.csv`);
     link.click();
   }
 
-  // Fungsi Save, Edit, Hapus tetap sama seperti sebelumnya
   async function prosesSimpan() {
     const id = document.getElementById('editId').value;
     const trx = {
@@ -192,7 +181,6 @@ const dataTransaksiServer = dataSupabase || [];
       keluar: parseFloat(document.getElementById('keluar').value) || 0
     };
     if (!trx.tanggal || !trx.keterangan) return alert("Lengkapi data!");
-
     const res = await fetch('/api/save-transaction', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -209,7 +197,7 @@ const dataTransaksiServer = dataSupabase || [];
     document.getElementById('jenis').value = data.jenis;
     document.getElementById('masuk').value = data.masuk;
     document.getElementById('keluar').value = data.keluar;
-    document.getElementById('btnSimpan').innerText = "PERBARUI";
+    document.getElementById('btnSimpan').innerText = "UPDATE DATA";
     document.getElementById('btnCancel').style.display = "block";
     document.querySelector('details').open = true;
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -218,8 +206,9 @@ const dataTransaksiServer = dataSupabase || [];
   function cancelEdit() {
     isEditing = false;
     document.getElementById('editId').value = "";
-    document.getElementById('btnSimpan').innerText = "SIMPAN";
+    document.getElementById('btnSimpan').innerText = "SIMPAN DATA";
     document.getElementById('btnCancel').style.display = "none";
+    document.getElementById('keterangan').value = "";
   }
 
   async function hapusData(id) {
@@ -232,56 +221,3 @@ const dataTransaksiServer = dataSupabase || [];
     if (res.ok) location.reload();
   }
 </script>
-
-<style>
-  :root { --gold: #c5a059; --bg: #0f0f0f; --card: #1a1a1a; --border: #2d2d2d; }
-  .admin-page { background: var(--bg); color: #e0e0e0; min-height: 100vh; padding: 20px 10px; font-family: sans-serif; }
-  .container { max-width: 900px; margin: auto; }
-  .header-section { text-align: center; margin-bottom: 25px; }
-  .gold { color: var(--gold); }
-
-  /* RECAP */
-  .recap-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
-  .recap-card { background: var(--card); padding: 12px; border-radius: 12px; border: 1px solid var(--border); text-align: center; }
-  .recap-card.highlight { border-color: var(--gold); background: rgba(197, 160, 89, 0.05); }
-  .label { display: block; font-size: 9px; color: #888; text-transform: uppercase; }
-  .amount { font-size: 11px; font-weight: bold; margin-top: 5px; }
-
-  /* GLASS CARD & DETAILS */
-  .glass-card { background: var(--card); padding: 15px; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 20px; }
-  summary { cursor: pointer; color: var(--gold); font-weight: bold; outline: none; }
-
-  /* FILTER SECTION */
-  .filter-card { background: #111; padding: 15px; border-radius: 15px; border: 1px solid var(--gold); margin-bottom: 25px; }
-  .filter-card h3 { font-size: 14px; margin-bottom: 15px; color: var(--gold); }
-  .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-  .filter-item label { display: block; font-size: 11px; margin-bottom: 5px; color: #888; }
-  .date-range { display: flex; align-items: center; gap: 5px; }
-  .date-range input { font-size: 11px; padding: 8px; }
-  .filter-item select, .filter-item input { width: 100%; background: #222; border: 1px solid #333; color: white; padding: 10px; border-radius: 8px; }
-  .btn-download { width: 100%; margin-top: 15px; padding: 12px; background: #1e293b; color: #38bdf8; border: 1px solid #38bdf8; border-radius: 10px; font-weight: bold; cursor: pointer; }
-
-  /* FORM LAYOUT */
-  .form-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .full { grid-column: span 2; }
-  .form-item label { display: block; font-size: 11px; color: var(--gold); margin-bottom: 5px; }
-  .form-item input, .form-item select { width: 100%; background: #252525; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 8px; }
-  .btn-group { display: flex; gap: 10px; margin-top: 15px; }
-  .btn-primary { flex: 2; padding: 14px; background: var(--gold); border: none; font-weight: bold; border-radius: 10px; color: #000; cursor: pointer; }
-  .btn-cancel { flex: 1; background: #333; color: white; border: none; border-radius: 10px; cursor: pointer; }
-
-  /* TABLE */
-  .table-wrapper { background: var(--card); border-radius: 12px; border: 1px solid var(--border); overflow-x: auto; }
-  .classic-table { width: 100%; border-collapse: collapse; min-width: 750px; }
-  .classic-table th { background: #222; padding: 12px; text-align: left; font-size: 11px; color: #888; }
-  .classic-table td { padding: 12px; border-bottom: 1px solid #252525; font-size: 13px; }
-  .action-btns { display: flex; gap: 5px; }
-  .btn-edit, .btn-delete { background: #222; border: 1px solid #444; border-radius: 6px; padding: 5px; cursor: pointer; }
-  .text-green { color: #4ade80; }
-  .text-red { color: #f87171; }
-  .badge { background: #333; padding: 3px 7px; border-radius: 4px; font-size: 10px; }
-
-  @media (max-width: 600px) {
-    .filter-grid { grid-template-columns: 1fr; }
-  }
-</style>

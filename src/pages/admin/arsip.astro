@@ -1,0 +1,188 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(import.meta.env.SUPABASE_URL, import.meta.env.SUPABASE_ANON_KEY);
+
+// Ambil data untuk laporan
+const { data: listArsip } = await supabase.from('arsip_dokumen').select('*').order('created_at', { ascending: false });
+const { data: dataTrx } = await supabase.from('transaksi').select('*');
+const { data: dataStok } = await supabase.from('stok_kopi').select('*');
+---
+
+<MainLayout title="Arsip & Generator | Lakoffie">
+  <link rel="stylesheet" href="/src/styles/admin.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" is:inline></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js" is:inline></script>
+
+  <section class="admin-container">
+    <nav class="admin-nav">
+        <a href="/admin/input" class="nav-link">💰 Kas</a>
+        <a href="/admin/stok" class="nav-link">📦 Stok</a>
+        <a href="/admin/arsip" class="nav-link active">📁 Arsip PDF</a>
+    </nav>
+
+    <div id="db-data" 
+         data-trx={JSON.stringify(dataTrx)} 
+         data-stok={JSON.stringify(dataStok)} 
+         data-url={import.meta.env.SUPABASE_URL}
+         data-key={import.meta.env.SUPABASE_ANON_KEY}
+         style="display:none"></div>
+
+    <div class="glass-card">
+      <h3>📄 Buat Dokumen Baru</h3>
+      <div class="form-grid">
+        <div class="form-item full">
+          <label>Jenis Dokumen</label>
+          <select id="docKategori">
+            <option value="Faktur Penjualan">🧾 Faktur Penjualan</option>
+            <option value="Faktur Pembelian">🛒 Faktur Pembelian</option>
+            <option value="Proposal">🤝 Proposal Kerjasama</option>
+            <option value="Laporan Keuangan">📊 Laporan Transaksi (Auto)</option>
+          </select>
+        </div>
+        <div class="form-item" id="boxPenerima">
+          <label>Nama Penerima / Mitra</label>
+          <input type="text" id="docPenerima" placeholder="Nama orang/perusahaan" />
+        </div>
+        <div class="form-item" id="boxBarang">
+          <label>Nama Barang / Project</label>
+          <input type="text" id="docBarang" placeholder="Contoh: Kopi Bubuk 250g" />
+        </div>
+        <div class="form-item" id="boxJumlah">
+          <label>Jumlah / Nilai</label>
+          <input type="text" id="docJumlah" placeholder="Contoh: 10 Pcs / Rp 500.000" />
+        </div>
+      </div>
+      <button onclick="generatePDF()" id="btnGen" class="btn-primary">GENERATE & SIMPAN PDF</button>
+    </div>
+
+    <div class="header-section" style="margin-top:40px">
+      <h3>Daftar Arsip Digital</h3>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Nama Dokumen</th>
+            <th>Penerima</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {listArsip?.map(doc => (
+            <tr>
+              <td>{new Date(doc.created_at).toLocaleDateString('id-ID')}</td>
+              <td><b>{doc.kategori}</b><br/><small>{doc.nama_dokumen}</small></td>
+              <td>{doc.nama_penerima || '-'}</td>
+              <td><a href={doc.file_url} target="_blank" class="btn-edit" style="text-decoration:none">👁️ Lihat</a></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</MainLayout>
+
+<script is:inline>
+  const dbStore = document.getElementById('db-data');
+  const SUPABASE_URL = dbStore.dataset.url;
+  const SUPABASE_KEY = dbStore.dataset.key;
+
+  async function generatePDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const btn = document.getElementById('btnGen');
+    
+    const kategori = document.getElementById('docKategori').value;
+    const penerima = document.getElementById('docPenerima').value;
+    const barang = document.getElementById('docBarang').value;
+    const jumlah = document.getElementById('docJumlah').value;
+    const tgl = new Date().toLocaleDateString('id-ID');
+
+    btn.disabled = true; btn.innerText = "Processing...";
+
+    // --- KONTEN PDF ---
+    doc.setFontSize(20); doc.text("LAKOFFIE COFFEE", 105, 20, {align: 'center'});
+    doc.setFontSize(10); doc.text("Digital Document System", 105, 26, {align: 'center'});
+    doc.line(20, 30, 190, 30);
+
+    doc.setFontSize(14); doc.text(kategori.toUpperCase(), 20, 45);
+    doc.setFontSize(10);
+    doc.text(`Tanggal: ${tgl}`, 20, 55);
+    doc.text(`Penerima: ${penerima || 'Internal'}`, 20, 62);
+
+    if(kategori.includes("Laporan")) {
+        // AMBIL DATA DARI DB UNTUK LAPORAN
+        const trx = JSON.parse(dbStore.dataset.trx);
+        const body = trx.map(t => [t.tanggal, t.keterangan, t.masuk, t.keluar]);
+        doc.autoTable({
+            startY: 70,
+            head: [['Tanggal', 'Keterangan', 'Masuk', 'Keluar']],
+            body: body,
+        });
+    } else {
+        // FORMAT FAKTUR / PROPOSAL
+        doc.autoTable({
+            startY: 75,
+            head: [['Deskripsi', 'Detail']],
+            body: [
+                ['Nama Barang / Project', barang],
+                ['Jumlah / Nilai', jumlah]
+            ],
+        });
+    }
+    
+    // Tanda Tangan
+    const finalY = doc.lastAutoTable.finalY + 20;
+    doc.text("Hormat Kami,", 150, finalY);
+    doc.text("Master Lakoffie", 150, finalY + 20);
+
+    // --- PROSES UPLOAD KE SUPABASE ---
+    const pdfBlob = doc.output('blob');
+    const fileName = `${kategori.replace(/ /g,'_')}_${Date.now()}.pdf`;
+
+    try {
+        // 1. Upload ke Storage
+        const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/arsip-lakoffie/${fileName}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${SUPABASE_KEY}`,
+                'Content-Type': 'application/pdf'
+            },
+            body: pdfBlob
+        });
+
+        if(!uploadRes.ok) throw new Error("Gagal Upload Storage");
+
+        const fileUrl = `${SUPABASE_URL}/storage/v1/object/public/arsip-lakoffie/${fileName}`;
+
+        // 2. Simpan Catatan di Tabel DB
+        const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/arsip_dokumen`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${SUPABASE_KEY}`,
+                'apikey': SUPABASE_KEY,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                nama_dokumen: fileName,
+                kategori: kategori,
+                nama_penerima: penerima,
+                file_url: fileUrl
+            })
+        });
+
+        if(dbRes.ok) {
+            alert("Berhasil diarsip!");
+            doc.save(fileName); // Download ke HP Master juga
+            location.reload();
+        }
+    } catch (err) {
+        alert("Error: " + err.message);
+    } finally {
+        btn.disabled = false; btn.innerText = "GENERATE & SIMPAN PDF";
+    }
+  }
+</script>

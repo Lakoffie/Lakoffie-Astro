@@ -1,0 +1,209 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(import.meta.env.SUPABASE_URL, import.meta.env.SUPABASE_ANON_KEY);
+
+// Ambil data stok
+const { data: listStok } = await supabase.from('stok_kopi').select('*').order('tanggal', { ascending: false });
+const stokDataRaw = listStok || [];
+---
+
+<MainLayout title="Logistik | Lakoffie">
+  <link rel="stylesheet" href="/src/styles/admin.css" />
+
+  <section class="admin-container">
+    
+    <nav class="admin-nav">
+        <a href="/admin/input" class="nav-link">💰 Keuangan</a>
+        <a href="/admin/stok" class="nav-link active">📦 Stok & Produksi</a>
+        <a href="/admin/arsip" class="nav-link active">📁 Arsip PDF</a>
+    </nav>
+
+    <div class="header-section" style="text-align: center; margin-bottom: 20px;">
+      <h1>Logistik & <span class="gold">Produksi</span></h1>
+    </div>
+
+    <div class="recap-grid" id="recapStok">
+      </div>
+
+    <details class="glass-card">
+      <summary>➕ Catat Mutasi / Produksi</summary>
+      <div id="formContainer" style="margin-top:20px">
+        <div class="form-grid">
+          <div class="form-item">
+            <label>Tanggal</label>
+            <input type="date" id="tgl_stok" value={new Date().toISOString().split('T')[0]} />
+          </div>
+          <div class="form-item">
+            <label>Kategori</label>
+            <select id="kat_stok">
+              <option value="Bahan Baku">📦 Bahan Baku</option>
+              <option value="Kopi Bubuk">☕ Produksi Bubuk</option>
+              <option value="Produk Kemas">🛍️ Siap Jual</option>
+            </select>
+          </div>
+          <div class="form-item full">
+            <label>Nama Item</label>
+            <input type="text" id="nama_item" placeholder="Contoh: Arabica Gayo" list="item-list" />
+            <datalist id="item-list">
+              <option value="Biji Arabica"></option>
+              <option value="Biji Robusta"></option>
+              <option value="Bubuk Halus"></option>
+              <option value="Kemasan 250gr"></option>
+            </datalist>
+          </div>
+          <div class="form-item">
+            <label>Tipe Mutasi</label>
+            <select id="tipe_mutasi">
+              <option value="Masuk">➕ Barang Masuk</option>
+              <option value="Keluar">➖ Barang Keluar</option>
+            </select>
+          </div>
+          <div class="form-item">
+            <label>Jumlah (Gram/Pcs)</label>
+            <input type="number" id="jml_stok" placeholder="0" />
+          </div>
+          <div class="form-item full">
+            <label>Keterangan</label>
+            <input type="text" id="ket_stok" placeholder="Contoh: Roasting Biji" />
+          </div>
+        </div>
+        <button onclick="simpanStok()" id="btnStok" class="btn-primary">CATAT MUTASI</button>
+      </div>
+    </details>
+
+    <div class="glass-card" style="border-color: #333;">
+      <div class="form-grid">
+        <div class="form-item">
+          <label>Dari Tanggal</label>
+          <input type="date" id="filterStart" onchange="updateTampilan()" />
+        </div>
+        <div class="form-item">
+          <label>Sampai Tanggal</label>
+          <input type="date" id="filterEnd" onchange="updateTampilan()" />
+        </div>
+        <div class="form-item full">
+          <label>Kategori Stok</label>
+          <select id="filterKategori" onchange="updateTampilan()">
+            <option value="Semua">Semua Kategori</option>
+            <option value="Bahan Baku">Bahan Baku</option>
+            <option value="Kopi Bubuk">Produksi Bubuk</option>
+            <option value="Produk Kemas">Siap Jual</option>
+          </select>
+        </div>
+      </div>
+      <button onclick="downloadStok()" class="btn-download">📂 Download Data Stok (CSV)</button>
+    </div>
+
+    <div class="table-wrapper">
+      <div id="data-stok-store" data-json={JSON.stringify(stokDataRaw)}></div>
+      <table>
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Item</th>
+            <th>Kategori</th>
+            <th>Mutasi</th>
+            <th>Keterangan</th>
+          </tr>
+        </thead>
+        <tbody id="tableStokBody"></tbody>
+      </table>
+    </div>
+
+  </section>
+</MainLayout>
+
+<script is:inline>
+  const store = document.getElementById('data-stok-store');
+  let dataStok = JSON.parse(store?.getAttribute('data-json') || '[]');
+
+  updateTampilan();
+
+  function updateTampilan() {
+    const tableBody = document.getElementById('tableStokBody');
+    const recapGrid = document.getElementById('recapStok');
+    const fStart = document.getElementById('filterStart').value;
+    const fEnd = document.getElementById('filterEnd').value;
+    const fKat = document.getElementById('filterKategori').value;
+
+    tableBody.innerHTML = "";
+    
+    // 1. FILTER DATA
+    const filtered = dataStok.filter(s => {
+      const matchStart = fStart ? s.tanggal >= fStart : true;
+      const matchEnd = fEnd ? s.tanggal <= fEnd : true;
+      const matchKat = fKat === "Semua" ? true : s.kategori === fKat;
+      return matchStart && matchEnd && matchKat;
+    });
+
+    // 2. HITUNG SALDO BERDASARKAN FILTER
+    const saldo = {};
+    filtered.forEach(s => {
+      const jml = s.tipe === 'Masuk' ? s.jumlah : -s.jumlah;
+      saldo[s.item_nama] = (saldo[s.item_nama] || 0) + jml;
+
+      // Isi Tabel
+      tableBody.innerHTML += `
+        <tr>
+          <td style="white-space:nowrap">${s.tanggal}</td>
+          <td><b>${s.item_nama}</b></td>
+          <td><span class="badge">${s.kategori}</span></td>
+          <td class="${s.tipe === 'Masuk' ? 'text-green' : 'text-red'}">
+            <b>${s.tipe === 'Masuk' ? '+' : '-'}${s.jumlah.toLocaleString()}</b>
+          </td>
+          <td style="font-size: 11px; color: #888;">${s.keterangan || '-'}</td>
+        </tr>
+      `;
+    });
+
+    // 3. UPDATE KARTU RANGKUMAN
+    recapGrid.innerHTML = "";
+    Object.entries(saldo).forEach(([nama, total]) => {
+      recapGrid.innerHTML += `
+        <div class="recap-card">
+          <span class="label">${nama}</span>
+          <h2 class="${total < 500 ? 'text-red' : 'gold'}" style="font-size: 16px;">
+            ${total.toLocaleString()} <small style="font-size: 10px;">gr/pcs</small>
+          </h2>
+          ${total < 500 ? '<div style="font-size: 8px; color: #f87171;">⚠️ LOW</div>' : ''}
+        </div>
+      `;
+    });
+  }
+
+  function downloadStok() {
+    const headers = ["Tanggal", "Item", "Kategori", "Tipe", "Jumlah", "Keterangan"];
+    const rows = dataStok.map(s => [s.tanggal, s.item_nama, s.kategori, s.tipe, s.jumlah, s.keterangan]);
+    let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + rows.map(e => e.join(",")).join("\n");
+    const link = document.createElement("a");
+    link.setAttribute("href", encodeURI(csvContent));
+    link.setAttribute("download", `Data_Stok_Lakoffie_${new Date().toLocaleDateString()}.csv`);
+    link.click();
+  }
+
+  async function simpanStok() {
+    const btn = document.getElementById('btnStok');
+    const data = {
+      tanggal: document.getElementById('tgl_stok').value,
+      item_nama: document.getElementById('nama_item').value,
+      kategori: document.getElementById('kat_stok').value,
+      tipe: document.getElementById('tipe_mutasi').value,
+      jumlah: parseFloat(document.getElementById('jml_stok').value),
+      keterangan: document.getElementById('ket_stok').value
+    };
+
+    if(!data.item_nama || !data.jumlah) return alert("Lengkapi data!");
+    btn.disabled = true; btn.innerText = "Menyimpan...";
+
+    const res = await fetch('/api/save-stok', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    });
+
+    if(res.ok) location.reload();
+    else { alert("Gagal!"); btn.disabled = false; btn.innerText = "CATAT MUTASI"; }
+  }
+</script>
