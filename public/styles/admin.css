@@ -1,0 +1,120 @@
+/* public/styles/admin.css */
+:root { 
+    --gold: #c5a059; 
+    --bg: #0a0a0a; 
+    --card: #151515; 
+    --border: #222; 
+    --text: #e0e0e0;
+    --green: #4ade80;
+    --red: #f87171;
+}
+
+/* CONTAINER UTAMA - Diberi Jarak Atas Biar Gak Ketutupan Nav Bawaan */
+.admin-container { 
+    max-width: 900px; 
+    margin: auto; 
+    padding: 100px 15px 40px 15px; /* 100px menjaga jarak dari header website */
+}
+
+.gold { color: var(--gold); }
+.text-green { color: var(--green); }
+.text-red { color: var(--red); }
+
+/* MENU NAVIGASI ADMIN */
+.admin-nav {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 25px;
+    background: var(--card);
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    position: sticky;
+    top: 80px; /* Nempel di bawah navigasi utama saat di-scroll */
+    z-index: 10;
+}
+
+.nav-link {
+    flex: 1;
+    text-align: center;
+    padding: 12px 5px;
+    border-radius: 8px;
+    color: #888;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.nav-link.active {
+    background: var(--gold);
+    color: #000;
+}
+
+/* KARTU RANGKUMAN (RECAP) */
+.recap-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); 
+    gap: 10px; 
+    margin-bottom: 20px; 
+}
+.recap-card { 
+    background: var(--card); 
+    padding: 15px; 
+    border-radius: 12px; 
+    border: 1px solid var(--border); 
+    text-align: center; 
+}
+.recap-card.highlight { border-color: var(--gold); background: rgba(197, 160, 89, 0.05); }
+.label { display: block; font-size: 10px; color: #666; text-transform: uppercase; margin-bottom: 4px; }
+
+/* FORM & INPUT */
+.glass-card { 
+    background: var(--card); 
+    padding: 18px; 
+    border-radius: 15px; 
+    border: 1px solid var(--border); 
+    margin-bottom: 25px; 
+}
+summary { cursor: pointer; color: var(--gold); font-weight: bold; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-grid .full { grid-column: span 2; }
+.form-item label { display: block; font-size: 11px; color: var(--gold); margin-bottom: 5px; }
+.form-item input, .form-item select { 
+    width: 100%; background: #222; border: 1px solid #333; 
+    color: white; padding: 12px; border-radius: 8px; font-size: 14px; outline: none;
+}
+
+/* TOMBOL-TOMBOL */
+.btn-primary { 
+    width: 100%; margin-top: 15px; padding: 14px; 
+    background: var(--gold); border: none; font-weight: bold; 
+    border-radius: 10px; cursor: pointer; color: #000;
+}
+.btn-download {
+    width: 100%; margin-top: 15px; padding: 12px;
+    background: transparent; color: #38bdf8; border: 1px solid #38bdf8;
+    border-radius: 10px; font-weight: bold; cursor: pointer;
+}
+.action-btns { display: flex; gap: 8px; }
+.btn-edit, .btn-delete { 
+    background: #222; border: 1px solid #333; border-radius: 6px; 
+    padding: 8px; cursor: pointer; 
+}
+
+/* TABEL */
+.table-wrapper { 
+    background: var(--card); border-radius: 12px; 
+    overflow-x: auto; border: 1px solid var(--border); 
+}
+table { width: 100%; border-collapse: collapse; min-width: 600px; }
+th { background: #111; padding: 12px; text-align: left; font-size: 11px; color: #666; text-transform: uppercase; }
+td { padding: 12px; border-bottom: 1px solid #222; font-size: 13px; }
+.badge { background: #222; padding: 3px 7px; border-radius: 4px; font-size: 10px; color: #ccc; }
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid .full { grid-column: span 1; }
+    .admin-container { padding-top: 90px; }
+}
