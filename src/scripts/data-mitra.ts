@@ -3,7 +3,7 @@ export interface Mitra {
   nama: string;
   wilayah: string; // Kabupaten/Kota
   kecamatan: string;
-  jenis: 'Toko' | 'Cafe';
+  jenis: 'Toko' | 'Cafe' | 'Minimarket' | 'reseller';
   alamat: string;
   gmaps: string;
   image: string;

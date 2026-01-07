@@ -1,0 +1,135 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+
+// Logic sederhana: Jika ada POST request, kita simpan datanya
+let message = "";
+if (Astro.request.method === 'POST') {
+  try {
+    const data = await Astro.request.formData();
+    const transaksi = {
+      tanggal: data.get('tanggal'),
+      kategori: data.get('kategori'), // Pemasukan / Pengeluaran
+      jenis: data.get('jenis'),       // Penjualan, HPP, Sewa, Alat
+      nominal: Number(data.get('nominal')),
+      keterangan: data.get('keterangan')
+    };
+    
+    // Di sini nantinya Master bisa hubungkan ke Database
+    console.log("Data Tersimpan:", transaksi);
+    message = "✅ Data transaksi berhasil dicatat!";
+  } catch (error) {
+    message = "❌ Gagal menyimpan data.";
+  }
+}
+---
+
+<MainLayout title="Input Transaksi | Admin Lakoffie">
+  <section class="admin-finance">
+    <div class="container-small">
+      <header class="header-admin">
+        <h1>Input <span class="gold-text">Transaksi</span></h1>
+        <p>Catat setiap rupiah untuk laporan tahunan yang akurat.</p>
+      </header>
+
+      {message && <div class="alert">{message}</div>}
+
+      <form method="POST" class="finance-form">
+        <div class="form-group">
+          <label>Tanggal</label>
+          <input type="date" name="tanggal" required />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Kategori</label>
+            <select name="kategori">
+              <option value="pemasukan">Pemasukan (+)</option>
+              <option value="pengeluaran">Pengeluaran (-)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Jenis Post</label>
+            <select name="jenis">
+              <option value="penjualan">Penjualan Produk</option>
+              <option value="hpp">HPP (Beli Biji Kopi)</option>
+              <option value="operasional">Listrik/Gaji/Sewa</option>
+              <option value="aset">Pembelian Alat (Amortisasi)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Nominal (Rp)</label>
+          <input type="number" name="nominal" placeholder="Contoh: 500000" required />
+        </div>
+
+        <div class="form-group">
+          <label>Keterangan</label>
+          <textarea name="keterangan" rows="3" placeholder="Detail transaksi..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-gold">Simpan Transaksi</button>
+      </form>
+
+      <div class="nav-admin">
+        <a href="/admin">← Kembali ke Dashboard Keuangan</a>
+      </div>
+    </div>
+  </section>
+</MainLayout>
+
+<style>
+  .admin-finance { padding: 80px 0; background: #0c0b0a; min-height: 100vh; color: white; }
+  .container-small { max-width: 600px; margin: 0 auto; padding: 0 20px; }
+  .header-admin { text-align: center; margin-bottom: 40px; }
+  .header-admin h1 { font-family: serif; font-size: 2.5rem; }
+  
+  .finance-form { 
+    background: #141311; 
+    padding: 30px; 
+    border-radius: 20px; 
+    border: 1px solid rgba(191, 149, 63, 0.2); 
+  }
+  
+  .form-group { margin-bottom: 20px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+  
+  label { display: block; color: #888; font-size: 0.8rem; margin-bottom: 8px; text-transform: uppercase; }
+  
+  input, select, textarea { 
+    width: 100%; 
+    padding: 12px; 
+    background: #1e1d1b; 
+    border: 1px solid #333; 
+    color: white; 
+    border-radius: 8px; 
+    outline: none;
+  }
+  
+  input:focus { border-color: var(--gold); }
+  
+  .btn-gold { 
+    width: 100%; 
+    padding: 15px; 
+    background: var(--gold); 
+    color: black; 
+    border: none; 
+    border-radius: 10px; 
+    font-weight: bold; 
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .alert { 
+    background: rgba(191, 149, 63, 0.1); 
+    color: var(--gold); 
+    padding: 15px; 
+    border-radius: 10px; 
+    margin-bottom: 20px; 
+    text-align: center; 
+    border: 1px solid var(--gold);
+  }
+
+  .nav-admin { margin-top: 30px; text-align: center; }
+  .nav-admin a { color: #666; text-decoration: none; font-size: 0.9rem; }
+</style>

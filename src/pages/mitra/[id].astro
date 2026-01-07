@@ -15,31 +15,184 @@ if (!mitra) return Astro.redirect('/404');
 ---
 
 <MainLayout title={`${mitra.nama} | Mitra Lakoffie`}>
-  <section class="detail-mitra">
-    <div class="container">
-      <div class="breadcrumb">
-        <a href="/mitra">← Kembali ke Daftar Mitra</a>
+  <section class="detail-mitra-luxury">
+    <div class="container-small">
+      <div class="breadcrumb-luxury">
+        <a href="/mitra">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Kembali ke Daftar Mitra
+        </a>
       </div>
 
-      <div class="detail-grid">
-        <div class="detail-image">
-          <img src={mitra.image} alt={mitra.nama} />
-        </div>
-
-        <div class="detail-info">
-          <span class="badge-wilayah" style="position: static;">{mitra.jenis}</span>
-          <h1>{mitra.nama}</h1>
-          <div class="location-box">
-            <p style="color: var(--gold); font-weight: bold; margin-bottom: 10px;">📍 {mitra.wilayah}, {mitra.kecamatan}</p>
-            <p class="alamat" style="min-height: auto;">{mitra.alamat}</p>
+      <div class="luxury-card">
+        <div class="detail-grid">
+          <div class="detail-image-wrapper">
+            <img src={mitra.image} alt={mitra.nama} class="main-img" />
+            <div class="img-overlay"></div>
           </div>
 
-          <div class="action-buttons">
-            <a href={mitra.gmaps} target="_blank" class="btn-primary">Petunjuk Jalan (Maps)</a>
-            <a href={`https://wa.me/6285175285640?text=Stok Lakoffie di ${mitra.nama}`} class="btn-secondary">Hubungi Toko</a>
+          <div class="detail-info-premium">
+            <div class="header-info">
+              <span class="badge-gold">{mitra.jenis}</span>
+              <h1>{mitra.nama}</h1>
+              <div class="location-tag">
+                <span class="icon">📍</span> 
+                <strong>{mitra.wilayah}</strong>, {mitra.kecamatan}
+              </div>
+            </div>
+
+            <div class="content-info">
+              <label>Alamat Lengkap</label>
+              <p class="alamat-text">{mitra.alamat}</p>
+            </div>
+
+            <div class="action-buttons-group">
+              <a href={mitra.gmaps} target="_blank" class="btn-maps">
+                Buka Google Maps
+              </a>
+              <a href={`https://wa.me/6285175285640?text=Halo Lakoffie, saya ingin tanya stok di ${mitra.nama}`} class="btn-wa">
+                Cek Stok di Sini
+              </a>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
 </MainLayout>
+
+<style>
+  /* Container kecil agar tampilan terpusat & tidak terlalu lebar di layar PC */
+  .container-small {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  .detail-mitra-luxury {
+    background: #080808;
+    min-height: 80vh;
+    padding-top: 4rem;
+  }
+
+  .breadcrumb-luxury a {
+    color: #888;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+    transition: color 0.3s;
+  }
+
+  .breadcrumb-luxury a:hover { color: var(--gold); }
+
+  /* Kartu Utama */
+  .luxury-card {
+    background: #111;
+    border-radius: 24px;
+    border: 1px solid rgba(191, 149, 63, 0.2);
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Bagi dua sama rata */
+  }
+
+  /* Pengaturan Gambar agar tidak Overpowering */
+  .detail-image-wrapper {
+    position: relative;
+    height: 100%;
+    min-height: 400px;
+    background: #1a1a1a;
+  }
+
+  .main-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Gambar tetap proporsional */
+    display: block;
+  }
+
+  /* Info Panel */
+  .detail-info-premium {
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .badge-gold {
+    background: var(--gold);
+    color: #000;
+    padding: 4px 12px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+
+  .header-info h1 {
+    color: #fff;
+    font-family: serif;
+    font-size: 2.5rem;
+    margin: 1rem 0;
+  }
+
+  .location-tag {
+    color: var(--gold);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
+
+  .content-info label {
+    display: block;
+    color: #555;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+  }
+
+  .alamat-text {
+    color: #ccc;
+    line-height: 1.6;
+    font-size: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  /* Tombol Action */
+  .action-buttons-group {
+    display: flex;
+    gap: 15px;
+  }
+
+  .btn-maps, .btn-wa {
+    flex: 1;
+    padding: 14px;
+    text-align: center;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transition: 0.3s;
+  }
+
+  .btn-maps { background: var(--gold); color: #000; }
+  .btn-wa { border: 1px solid var(--gold); color: var(--gold); }
+
+  .btn-maps:hover { background: #d4a017; transform: translateY(-3px); }
+  .btn-wa:hover { background: rgba(191,149,63,0.1); transform: translateY(-3px); }
+
+  /* Responsive untuk HP */
+  @media (max-width: 768px) {
+    .detail-grid { grid-template-columns: 1fr; }
+    .detail-image-wrapper { min-height: 300px; }
+    .detail-info-premium { padding: 2rem; }
+    .header-info h1 { font-size: 1.8rem; }
+    .action-buttons-group { flex-direction: column; }
+  }
+</style>

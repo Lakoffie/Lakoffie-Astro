@@ -1,10 +1,17 @@
 ---
 // src/pages/index.astro
 import MainLayout from '../layouts/MainLayout.astro';
-import { varianKopi } from '../data/kopi'; // Pastikan Master sudah membuat file src/data/kopi.ts
+import { getCollection } from 'astro:content';
+import { varianKopi } from '../data/kopi'; 
 import '../styles/home.css';
 
-// Filter produk baru untuk trigger pop-up secara dinamis
+// 1. Ambil 3 artikel terbaru
+const semuaArtikel = await getCollection('artikel');
+const artikelTerbaru = semuaArtikel
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+
+// Filter produk baru untuk trigger pop-up
 const produkBaru = varianKopi.find(k => k.isNew);
 ---
 
@@ -29,39 +36,37 @@ const produkBaru = varianKopi.find(k => k.isNew);
     </div>
   </header>
 
-<section class="value-bar-luxury">
-  <div class="container-value">
-    <div class="value-item-soft">
-      <div class="value-icon-circle">01</div>
-      <div class="value-info">
-        <h3>Eksplorasi Rasa</h3>
-        <p>Kenapa harus puas dengan satu rasa, jika setiap seduhan bisa menceritakan petualangan yang berbeda?</p>
+  <section class="value-bar-luxury">
+    <div class="container-value">
+      <div class="value-item-soft">
+        <div class="value-icon-circle">01</div>
+        <div class="value-info">
+          <h3>Eksplorasi Rasa</h3>
+          <p>Kenapa harus puas dengan satu rasa, jika setiap seduhan bisa menceritakan petualangan yang berbeda?</p>
+        </div>
+      </div>
+
+      <div class="value-item-soft">
+        <div class="value-icon-circle">02</div>
+        <div class="value-info">
+          <h3>Kemewahan Inklusif</h3>
+          <p>Menikmati kopi kualitas <em>specialty</em> bukan lagi soal gengsi, tapi soal hak lidahmu untuk dimanja setiap pagi.</p>
+        </div>
+      </div>
+
+      <div class="value-item-soft">
+        <div class="value-icon-circle">03</div>
+        <div class="value-info">
+          <h3>Kejujuran Alam</h3>
+          <p>Saat yang lain berkompromi dengan campuran, kami memilih tetap setia pada kemurnian biji kopi pilihan.</p>
+        </div>
       </div>
     </div>
+  </section>
 
-    <div class="value-item-soft">
-      <div class="value-icon-circle">02</div>
-      <div class="value-info">
-        <h3>Kemewahan Inklusif</h3>
-        <p>Menikmati kopi kualitas <em>specialty</em> bukan lagi soal gengsi, tapi soal hak lidahmu untuk dimanja setiap pagi.</p>
-      </div>
-    </div>
-
-    <div class="value-item-soft">
-      <div class="value-icon-circle">03</div>
-      <div class="value-info">
-        <h3>Kejujuran Alam</h3>
-        <p>Saat yang lain berkompromi dengan campuran, kami memilih tetap setia pada kemurnian biji kopi pilihan.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-  <section class="sensory-experience" style="padding: 4rem 0; background: #0c0b0a;">
+  <section class="sensory-experience">
     <div class="container">
-      <h2 style="text-align: center; color: #fff; font-family: serif; margin-bottom: 2rem; font-size: 1.5rem;">
-        Catatan Rasa yang Akan <span style="color: var(--gold);">Anda Temukan</span>
-      </h2>
+      <h2>Catatan Rasa yang Akan <span class="gold-text">Anda Temukan</span></h2>
       <div class="fact-row-premium">
         <div class="fact-item">
           <span class="icon">🍫</span>
@@ -85,14 +90,12 @@ const produkBaru = varianKopi.find(k => k.isNew);
           </div>
         </div>
       </div>
-
-      <div class="cta-bottom" style="text-align: center; margin-top: 3rem;">
-         <p style="color: #666; margin-bottom: 1.5rem;">Masa nggak pengin ngopi nikmat ala café dengan harga bersahabat?</p>
+      <div class="cta-bottom">
+         <p>Masa nggak pengin ngopi nikmat ala café dengan harga bersahabat?</p>
          <a href="https://wa.me/6285175285640" class="btn-outline">Lihat Koleksi Kopi</a>
       </div>
     </div>
   </section>
-
 
   <section class="products">
     <div class="section-header">
@@ -105,17 +108,14 @@ const produkBaru = varianKopi.find(k => k.isNew);
       {varianKopi.map((v) => (
         <div class="product-card">
           {v.hargaPromo && <div class="promo-ribbon">PROMO</div>}
-          
           <div class="card-image">
              <img src={v.image} alt={v.alt} />
              <div class="pure-badge">100% Pure</div>
           </div>
-
           <div class="card-info">
             <span class="series-label">Signature Series</span>
             <h3>{v.nama}</h3>
             <p class="karakter">{v.karakter}</p>
-            
             <div class="price-wrapper">
               {v.hargaPromo ? (
                 <div class="promo-price-stack">
@@ -126,7 +126,6 @@ const produkBaru = varianKopi.find(k => k.isNew);
                 <span class="price">{v.harga}</span>
               )}
             </div>
-            
             <div class="product-actions">
               <a href={`/produk/${v.slug}`} class="btn-outline">Detail</a>
               <a href="https://wa.me/6285175285640" class="btn-gold">Beli</a>
@@ -134,6 +133,39 @@ const produkBaru = varianKopi.find(k => k.isNew);
           </div>
         </div>
       ))}
+    </div>
+  </section>
+
+  <section class="home-journal">
+    <div class="container">
+      <div class="journal-header">
+        <div>
+          <span class="badge">Journal</span>
+          <h2>Wawasan & <span class="gold-text italic">Inspirasi</span></h2>
+        </div>
+        <a href="/artikel" class="btn-text-gold">Buka Arsip →</a>
+      </div>
+
+      <div class="journal-preview-grid">
+        {artikelTerbaru.map((post) => (
+          <article class="luxury-journal-card">
+            <div class="journal-visual">
+              <img src={post.data.image} alt={post.data.alt} loading="lazy" />
+              <div class="journal-tag-float">{post.data.tags[0]}</div>
+            </div>
+            <div class="journal-body">
+              <h3>{post.data.title}</h3>
+              <p>{post.data.description.substring(0, 95)}...</p>
+              <div class="journal-footer">
+                <a href={`/artikel/${post.slug}`} class="link-explore">
+                  Jelajahi Cerita
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
     </div>
   </section>
 
@@ -160,79 +192,159 @@ const produkBaru = varianKopi.find(k => k.isNew);
   </section>
 
   {produkBaru && (
-  <div id="newProductModal" class="modal-overlay">
-    <div class="modal-content">
-      <button id="closeModal" class="close-btn" aria-label="Close">&times;</button>
-      
-      <div class="modal-grid">
-        <div class="modal-visual">
-          <img src={produkBaru.image} alt={produkBaru.alt} class="modal-img" />
-          <div class="visual-overlay"></div>
-        </div>
-        
-        <div class="modal-body">
-          <span class="gold-label">Eksklusif Terbaru</span>
-          <h2>{produkBaru.nama}</h2>
-          <div class="divider"></div>
-          <p class="modal-desc">
-            Rasakan simfoni rasa yang belum pernah ada sebelumnya. {produkBaru.karakter} yang diracik khusus untuk standar lidah Master.
-          </p>
-          
-          <div class="modal-cta-group">
-            <a href={`/produk/${produkBaru.slug}`} class="btn-primary-modal">
-              Jelajahi Rasa
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-            <p class="limited-tag">*Persediaan Terbatas</p>
+    <div id="newProductModal" class="modal-overlay">
+      <div class="modal-content">
+        <button id="closeModal" class="close-btn" aria-label="Close">&times;</button>
+        <div class="modal-grid">
+          <div class="modal-visual">
+            <img src={produkBaru.image} alt={produkBaru.alt} class="modal-img" />
+            <div class="visual-overlay"></div>
+          </div>
+          <div class="modal-body">
+            <span class="gold-label">Eksklusif Terbaru</span>
+            <h2>{produkBaru.nama}</h2>
+            <div class="divider"></div>
+            <p class="modal-desc">
+              Rasakan simfoni rasa yang belum pernah ada sebelumnya. {produkBaru.karakter} yang diracik khusus untuk standar lidah Master.
+            </p>
+            <div class="modal-cta-group">
+              <a href={`/produk/${produkBaru.slug}`} class="btn-primary-modal">Jelajahi Rasa</a>
+              <p class="limited-tag">*Persediaan Terbatas</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-)}
+  )}
 
 </MainLayout>
 
+<style>
+  /* --- Style Khusus Seksi Artikel Master --- */
+  .home-journal {
+    padding: 6rem 0;
+    background: #0c0b0a;
+  }
+  .journal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 3.5rem;
+  }
+  .journal-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2.5rem;
+  }
+  .luxury-journal-card {
+    background: #141311;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(191, 149, 63, 0.15); /* Border Emas Halus */
+    transition: all 0.4s ease;
+  }
+  .luxury-journal-card:hover {
+    transform: translateY(-10px);
+    border-color: rgba(191, 149, 63, 0.5);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+  }
+  .journal-visual {
+    height: 220px;
+    position: relative;
+    overflow: hidden;
+  }
+  .journal-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.7);
+    transition: 0.5s;
+  }
+  .luxury-journal-card:hover .journal-visual img {
+    filter: brightness(1);
+    transform: scale(1.05);
+  }
+  .journal-tag-float {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    background: var(--gold);
+    color: #000;
+    font-size: 0.65rem;
+    font-weight: bold;
+    padding: 4px 12px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+  .journal-body {
+    padding: 2rem;
+  }
+  .journal-body h3 {
+    color: #fff;
+    font-family: serif;
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    line-height: 1.3;
+  }
+  .journal-body p {
+    color: #888;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+  .journal-footer {
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding-top: 1.5rem;
+  }
+  .link-explore {
+    color: var(--gold);
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+  }
+  .link-explore:hover {
+    gap: 15px;
+  }
+  .btn-text-gold {
+    color: var(--gold);
+    text-decoration: none;
+    font-weight: bold;
+    border-bottom: 1px solid transparent;
+    transition: 0.3s;
+  }
+  .btn-text-gold:hover {
+    border-color: var(--gold);
+  }
+  @media (max-width: 768px) {
+    .journal-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  }
+</style>
+
 <script is:inline>
-  // Master, logic ini memastikan kesan mewah tidak terganggu oleh pop-up yang muncul terus-menerus
   window.addEventListener('load', () => {
     const modal = document.getElementById('newProductModal');
     const closeBtn = document.getElementById('closeModal');
-    
-    // 1. Cek Session Storage agar tidak mengganggu user yang sedang asyik browsing
     const hasSeenPopup = sessionStorage.getItem('seenNewProduct');
     
-    // 2. Munculkan setelah delay 4 detik (Golden Time agar user tidak kaget)
     if (!hasSeenPopup && modal) {
       setTimeout(() => {
         modal.style.display = 'flex';
-        // Tambahkan efek transisi halus jika Master menggunakan CSS opacity
         modal.style.opacity = '1';
       }, 4000);
     }
 
-    // 3. Fungsi Menutup Modal & Mencatat Session
     const handleClose = () => {
-      modal.style.display = 'none';
-      sessionStorage.setItem('seenNewProduct', 'true');
+      if(modal) {
+        modal.style.display = 'none';
+        sessionStorage.setItem('seenNewProduct', 'true');
+      }
     };
 
-    // Klik Tombol Close (X)
     closeBtn?.addEventListener('click', handleClose);
-
-    // Klik di luar area Modal (Overlay Hitam) untuk menutup
-    // Ini standar UX Luxury: User tidak boleh merasa "terjebak"
-    window.addEventListener('click', (event) => {
-      if (event.target === modal) {
-        handleClose();
-      }
-    });
-
-    // Menutup dengan tombol Escape pada keyboard (Opsional tapi Pro)
-    window.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && modal.style.display === 'flex') {
-        handleClose();
-      }
-    });
+    window.addEventListener('click', (e) => { if (e.target === modal) handleClose(); });
   });
 </script>

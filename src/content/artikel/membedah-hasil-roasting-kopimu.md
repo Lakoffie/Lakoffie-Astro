@@ -3,7 +3,7 @@ title: "Kenapa Kopi Bisa Berkarakter? Jawabannya Ada di Teknik Roasting"
 description: "Biji kopi yang sama bisa terasa cokelat, karamel, atau pahit gosong. Semua itu bukan sihir—ini soal teknik roasting."
 pubDate: 2024-05-23
 author: "Master Lakoffie"
-image: "/public/img/blog/roasting-kopi.png"
+image: "/public/img/blog/roasting-kopi.jpg"
 alt: "Proses roasting biji kopi dengan tingkat sangrai berbeda"
 tags: ["Edukasi"]
 ---

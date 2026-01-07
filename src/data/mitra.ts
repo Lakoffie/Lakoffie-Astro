@@ -38,6 +38,19 @@ export const daftarMitra: Mitra[] = [
     lat: -7.3201627,
     lng: 110.5062782 // PERBAIKAN: ling -> lng
   },
+    {
+    id: 'ibu-olsa',
+    nama: 'Reseller Ibu Olsa',
+    alamat: ' jl.Kesambi, Kec. Sidomukti, Kota Salatiga',
+    wilayah: 'Salatiga',
+    kecamatan: 'Sidomukti',
+    jenis: 'Reseller',
+    image: '/img/mitra/reseller-ibu-olsa.jpg',
+    alt: 'reseller ibu olsa - tempat beli kopi lakoffie murni nendang body kental harga hemat',
+    gmaps: 'https://maps.app.goo.gl/bCETwgK9zRMuw7Mq5?g_st=ac',
+    lat: -7.330576,
+    lng: 110.503753 // PERBAIKAN: ling -> lng
+  },
   {
     id: 'toko-joko',
     nama: 'Toko Pak Joko',
