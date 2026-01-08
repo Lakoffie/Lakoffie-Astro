@@ -95,18 +95,7 @@ const { data: dataTrx } = await supabase.from('transaksi').select('*');
   const SUPABASE_URL = dbStore.dataset.url;
   const SUPABASE_KEY = dbStore.dataset.key;
 
-  function filterArsip() {
-    const kat = document.getElementById('filterKategori').value;
-    document.querySelectorAll('#arsipBody tr').forEach(tr => {
-      tr.style.display = (kat === "Semua" || tr.dataset.kat === kat) ? "" : "none";
-    });
-  }
-
-  function salinLink(url) {
-    navigator.clipboard.writeText(url);
-    alert("Link berhasil disalin! Silakan paste ke WhatsApp mitra.");
-  }
-
+  // Jaring pengaman agar tidak error saat generate
   async function generatePDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
@@ -114,88 +103,119 @@ const { data: dataTrx } = await supabase.from('transaksi').select('*');
     const urlTTD = "https://hlyviwpkxkrifgaapmzu.supabase.co/storage/v1/object/public/arsip-lakoffie/ttd.png";
 
     const kategori = document.getElementById('docKategori').value;
-    const penerima = document.getElementById('docPenerima').value;
-    const barang = document.getElementById('docBarang').value;
-    const jumlah = document.getElementById('docJumlah').value;
+    const penerima = document.getElementById('docPenerima').value || "Pelanggan";
+    const barang = document.getElementById('docBarang').value || "-";
+    const jumlah = document.getElementById('docJumlah').value || "0";
 
-    btn.disabled = true; btn.innerText = "Checking Order...";
+    btn.disabled = true; 
+    btn.innerText = "Proses Simpan Cloud...";
 
-    const resCount = await fetch(`${SUPABASE_URL}/rest/v1/arsip_dokumen?kategori=eq.${kategori}&select=id`, {
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-    });
-    const dataExist = await resCount.json();
-    const nextUrut = String(dataExist.length + 1).padStart(2, '0');
-
-    const now = new Date();
-    const d = String(now.getDate()).padStart(2, '0'), m = String(now.getMonth() + 1).padStart(2, '0'), y = now.getFullYear();
-    
-    let kode = "DOC";
-    if(kategori === "Faktur Penjualan") kode = "FKT-OUT";
-    else if(kategori === "Faktur Pembelian") kode = "FKT-IN";
-    else if(kategori === "Proposal") kode = "PRP";
-    else if(kategori === "Laporan Keuangan") kode = "LAP";
-
-    const noDoc = `${kode}/${nextUrut}/${d}/${m}/${y}`;
-    const cleanFileName = `${kode}-${nextUrut}-${d}-${m}-${y}.pdf`;
-    const storagePath = `${kategori.replace(/ /g, '_')}/${cleanFileName}`;
-
-    doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.text("LAKOFFIE", 105, 20, {align: 'center'});
-    doc.setFont("helvetica", "italic"); doc.setFontSize(10); doc.text("Kopi Bubuk Murni", 105, 26, {align: 'center'});
-    doc.line(20, 30, 190, 30);
-    doc.setFontSize(14); doc.text(kategori.toUpperCase(), 20, 45);
-    doc.setFontSize(10); doc.setFont("helvetica", "normal");
-    doc.text(`Nomor: ${noDoc}`, 20, 52);
-    doc.text(`Tanggal: ${d}/${m}/${y}`, 20, 58);
-    doc.text(`Penerima: ${penerima || '-'}`, 20, 64);
-
-    if(kategori.includes("Laporan")) {
-        const trx = JSON.parse(dbStore.dataset.trx);
-        doc.autoTable({ startY: 72, head: [['Tgl', 'Ket', 'Masuk', 'Keluar']], 
-            body: trx.map(t => [t.tanggal, t.keterangan, t.masuk, t.keluar]),
-            headStyles: { fillColor: [197, 160, 89] } 
-        });
-    } else {
-        doc.autoTable({ startY: 72, head: [['Deskripsi', 'Detail']], body: [['Barang/Project', barang], ['Nilai/Jumlah', jumlah]], headStyles: { fillColor: [197, 160, 89] } });
-    }
-
-    const finalY = (doc.lastAutoTable.finalY || 100) + 15;
-    doc.text("Hormat Kami,", 150, finalY);
-    try { doc.addImage(urlTTD, 'PNG', 145, finalY + 2, 30, 15); } catch(e){}
-    doc.setFont("helvetica", "bold"); doc.text("LAKOFFIE", 150, finalY + 25);
-
-    const pdfBlob = doc.output('blob');
     try {
-        const up = await fetch(`${SUPABASE_URL}/storage/v1/object/arsip-lakoffie/${storagePath}`, {
-            method: 'POST',
-            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/pdf' },
-            body: pdfBlob
-        });
-        if(!up.ok) throw new Error("Gagal simpan cloud");
+      // 1. Hitung urutan (Fix: Pastikan response oke)
+      const resCount = await fetch(`${SUPABASE_URL}/rest/v1/arsip_dokumen?kategori=eq.${kategori}&select=id`, {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      });
+      const dataExist = await resCount.json();
+      const nextUrut = String(dataExist.length + 1).padStart(3, '0');
 
-        const fileUrl = `${SUPABASE_URL}/storage/v1/object/public/arsip-lakoffie/${storagePath}`;
-        await fetch(`${SUPABASE_URL}/rest/v1/arsip_dokumen`, {
-            method: 'POST',
-            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nama_dokumen: noDoc, kategori, nama_penerima: penerima, file_url: fileUrl })
-        });
+      const now = new Date();
+      const d = String(now.getDate()).padStart(2, '0'), m = String(now.getMonth() + 1).padStart(2, '0'), y = now.getFullYear();
+      
+      let kode = "DOC";
+      if(kategori === "Faktur Penjualan") kode = "FKT-OUT";
+      else if(kategori === "Faktur Pembelian") kode = "FKT-IN";
+      else if(kategori === "Proposal") kode = "PRP";
+      else if(kategori === "Laporan Keuangan") kode = "LAP";
 
-        alert("Arsip Tersimpan di Cloud!");
-        location.reload();
-    } catch (err) { alert(err.message); }
+      const noDoc = `${kode}/${nextUrut}/${d}/${m}/${y}`;
+      // NAMA FILE HARUS KONSISTEN
+      const cleanFileName = `${kode}-${nextUrut}-${d}-${m}-${y}.pdf`;
+      const storagePath = `${kategori.replace(/ /g, '_')}/${cleanFileName}`;
+
+      // 2. Gambar PDF (Sama seperti kode Master)
+      doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.text("LAKOFFIE", 105, 20, {align: 'center'});
+      doc.setFont("helvetica", "italic"); doc.setFontSize(10); doc.text("Kopi Bubuk Murni Jujur", 105, 26, {align: 'center'});
+      doc.line(20, 30, 190, 30);
+      doc.setFontSize(14); doc.text(kategori.toUpperCase(), 20, 45);
+      doc.setFontSize(10); doc.setFont("helvetica", "normal");
+      doc.text(`Nomor: ${noDoc}`, 20, 52);
+      doc.text(`Tanggal: ${d}/${m}/${y}`, 20, 58);
+      doc.text(`Penerima: ${penerima}`, 20, 64);
+
+      if(kategori.includes("Laporan")) {
+          const trx = JSON.parse(dbStore.dataset.trx || "[]");
+          doc.autoTable({ startY: 72, head: [['Tgl', 'Ket', 'Masuk', 'Keluar']], 
+              body: trx.map(t => [t.tanggal, t.keterangan, t.masuk, t.keluar]),
+              headStyles: { fillColor: [197, 160, 89] } 
+          });
+      } else {
+          doc.autoTable({ startY: 72, head: [['Deskripsi', 'Detail']], body: [['Barang/Project', barang], ['Nilai/Jumlah', jumlah]], headStyles: { fillColor: [197, 160, 89] } });
+      }
+
+      const finalY = (doc.lastAutoTable.finalY || 100) + 15;
+      doc.text("Hormat Kami,", 150, finalY);
+      try { doc.addImage(urlTTD, 'PNG', 145, finalY + 2, 30, 15); } catch(e){ console.log("TTD skipped"); }
+      doc.setFont("helvetica", "bold"); doc.text("LAKOFFIE", 150, finalY + 25);
+
+      const pdfBlob = doc.output('blob');
+
+      // 3. UPLOAD KE STORAGE (FIX: Tambahkan x-upsert)
+      const up = await fetch(`${SUPABASE_URL}/storage/v1/object/arsip-lakoffie/${storagePath}`, {
+          method: 'POST',
+          headers: { 
+            'apikey': SUPABASE_KEY, 
+            'Authorization': `Bearer ${SUPABASE_KEY}`, 
+            'x-upsert': 'true' // AGAR TIDAK ERROR JIKA FILE SUDAH ADA
+          },
+          body: pdfBlob
+      });
+
+      if(!up.ok) {
+        const errData = await up.json();
+        throw new Error("Gagal Storage: " + (errData.message || up.statusText));
+      }
+
+      // 4. SIMPAN DATA KE DATABASE
+      const fileUrl = `${SUPABASE_URL}/storage/v1/object/public/arsip-lakoffie/${storagePath}`;
+      await fetch(`${SUPABASE_URL}/rest/v1/arsip_dokumen`, {
+          method: 'POST',
+          headers: { 
+            'apikey': SUPABASE_KEY, 
+            'Authorization': `Bearer ${SUPABASE_KEY}`, 
+            'Content-Type': 'application/json',
+            'Prefer': 'resolution=merge-duplicates' 
+          },
+          body: JSON.stringify({ nama_dokumen: noDoc, kategori, nama_penerima: penerima, file_url: fileUrl })
+      });
+
+      alert("Berhasil! Dokumen tersimpan di Cloud.");
+      location.reload();
+
+    } catch (err) { 
+      alert("Error: " + err.message); 
+      btn.disabled = false;
+      btn.innerText = "GENERATE & SIMPAN KE CLOUD";
+    }
   }
 
+  // FIX: Fungsi hapus harus tahu persis path di storage
   async function hapusArsip(id, noDoc, kategori) {
     if(!confirm(`Hapus permanen ${noDoc}?`)) return;
-    const storageName = noDoc.replace(/\//g, '-') + ".pdf";
-    const storagePath = `${kategori.replace(/ /g, '_')}/${storageName}`;
+    
+    // Path harus sama persis dengan saat upload
+    const cleanFileName = noDoc.replace(/\//g, '-') + ".pdf";
+    const storagePath = `${kategori.replace(/ /g, '_')}/${cleanFileName}`;
+
     try {
+        // Hapus Database
         await fetch(`${SUPABASE_URL}/rest/v1/arsip_dokumen?id=eq.${id}`, {
             method: 'DELETE', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
         });
+        // Hapus Storage
         await fetch(`${SUPABASE_URL}/storage/v1/object/arsip-lakoffie/${storagePath}`, {
             method: 'DELETE', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
         });
         location.reload();
-    } catch (err) { alert("Gagal hapus"); }
+    } catch (err) { alert("Gagal hapus sepenuhnya"); }
   }
 </script>
