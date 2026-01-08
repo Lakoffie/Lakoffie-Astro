@@ -5,7 +5,6 @@ import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(import.meta.env.SUPABASE_URL, import.meta.env.SUPABASE_ANON_KEY);
 
 const { data: listArsip } = await supabase.from('arsip_dokumen').select('*').order('created_at', { ascending: false });
-const { data: dataTrx } = await supabase.from('transaksi').select('*');
 ---
 
 <MainLayout title="Arsip & Generator | Lakoffie">
@@ -21,65 +20,83 @@ const { data: dataTrx } = await supabase.from('transaksi').select('*');
     </nav>
 
     <div id="db-data" 
-         data-trx={JSON.stringify(dataTrx)} 
          data-url={import.meta.env.SUPABASE_URL}
          data-key={import.meta.env.SUPABASE_ANON_KEY}
          style="display:none"></div>
 
     <div class="glass-card">
-      <h3>📄 Buat Dokumen Baru</h3>
+      <h3>📄 Buat Faktur Baru</h3>
       <div class="form-grid">
-        <div class="form-item full">
-          <label>Jenis Dokumen</label>
-          <select id="docKategori">
+        <div class="form-item"><label>Jenis Dokumen</label>
+          <select id="docKategori" class="input-gold">
             <option value="Faktur Penjualan">Faktur Penjualan</option>
             <option value="Faktur Pembelian">Faktur Pembelian</option>
-            <option value="Proposal">Proposal</option>
-            <option value="Laporan Keuangan">Laporan Keuangan</option>
           </select>
         </div>
-        <div class="form-item"><label>Penerima</label><input type="text" id="docPenerima" placeholder="Nama Mitra" /></div>
-        <div class="form-item"><label>Barang/Project</label><input type="text" id="docBarang" placeholder="Deskripsi" /></div>
-        <div class="form-item full"><label>Jumlah/Nilai</label><input type="text" id="docJumlah" placeholder="Qty / Rp" /></div>
+        <div class="form-item"><label>Status Pembayaran</label>
+            <select id="docStatus" class="input-gold">
+              <option value="Lunas">✅ Lunas</option>
+              <option value="Belum Lunas">⏳ Belum Lunas (Draft)</option>
+            </select>
+        </div>
+        <div class="form-item full"><label>Nama Penerima</label><input type="text" id="docPenerima" class="input-gold" placeholder="Contoh: Toko Kopi Jaya" /></div>
+        
+        <div class="form-item full">
+            <label>Daftar Barang (Pisahkan dengan koma per barang)</label>
+            <textarea id="docBarang" class="input-gold" rows="2" placeholder="Contoh: Robusta 250g, Arabica 500g"></textarea>
+        </div>
+        <div class="form-item"><label>Jumlah (Qty)</label><input type="text" id="docJumlah" class="input-gold" placeholder="Contoh: 2, 1" /></div>
+        <div class="form-item"><label>Harga Satuan (Rp)</label><input type="text" id="docHarga" class="input-gold" placeholder="Contoh: 50000, 85000" /></div>
       </div>
       <button onclick="generatePDF()" id="btnGen" class="btn-primary">GENERATE & SIMPAN KE CLOUD</button>
     </div>
 
     <div class="header-section" style="margin-top:40px; display:flex; justify-content:space-between; align-items:center;">
       <h3>Daftar Arsip Digital</h3>
-      <select id="filterKategori" onchange="filterArsip()" style="padding:8px; border-radius:8px; background:#151515; color:white; border:1px solid var(--gold); font-size: 12px;">
-        <option value="Semua">Semua Kategori</option>
-        <option value="Faktur Penjualan">Faktur Penjualan</option>
-        <option value="Faktur Pembelian">Faktur Pembelian</option>
-        <option value="Proposal">Proposal</option>
-        <option value="Laporan Keuangan">Laporan Keuangan</option>
-      </select>
+      <div style="display:flex; gap:10px;">
+          <select id="filterStatus" onchange="filterArsip()" class="select-mini">
+            <option value="Semua">Semua Status</option>
+            <option value="Lunas">Lunas</option>
+            <option value="Belum Lunas">Belum Lunas</option>
+          </select>
+          <select id="filterKategori" onchange="filterArsip()" class="select-mini">
+            <option value="Semua">Semua Kategori</option>
+            <option value="Faktur Penjualan">Penjualan</option>
+            <option value="Faktur Pembelian">Pembelian</option>
+          </select>
+      </div>
     </div>
 
     <div class="table-wrapper">
       <table>
         <thead>
           <tr>
-            <th>Info Dokumen</th>
-            <th>Penerima</th>
+            <th>Dokumen</th>
+            <th>Penerima & Status</th>
             <th style="text-align:center">Aksi</th>
           </tr>
         </thead>
         <tbody id="arsipBody">
           {listArsip?.map(doc => (
-            <tr data-kat={doc.kategori}>
+            <tr data-kat={doc.kategori} data-status={doc.status || 'Lunas'}>
               <td>
-                <small class="gold" style="font-size: 10px;">{doc.kategori}</small><br/>
+                <small class="gold">{doc.kategori}</small><br/>
                 <b>{doc.nama_dokumen}</b><br/>
                 <small style="color: #666;">{new Date(doc.created_at).toLocaleDateString('id-ID')}</small>
               </td>
-              <td style="font-size: 12px;">{doc.nama_penerima || '-'}</td>
               <td>
-                <div class="action-btns" style="justify-content: center;">
-                    <a href={doc.file_url} target="_blank" title="Lihat" class="btn-edit" style="background: #111;">👁️</a>
-                    <a href={doc.file_url} download title="Download" class="btn-edit" style="background: #111;">📥</a>
-                    <button onclick={`salinLink('${doc.file_url}')`} title="Salin Link" class="btn-edit" style="background: #111;">🔗</button>
-                    <button onclick={`hapusArsip(${doc.id}, '${doc.nama_dokumen}', '${doc.kategori}')`} class="btn-delete" style="background: #221111;">🗑️</button>
+                <span style="font-size: 13px;">{doc.nama_penerima || '-'}</span><br/>
+                <span class={doc.status === 'Belum Lunas' ? 'badge-red' : 'badge-green'}>
+                    {doc.status || 'Lunas'}
+                </span>
+              </td>
+              <td>
+                <div class="action-btns-grid">
+                    <a href={doc.file_url} target="_blank" title="Lihat" class="btn-icon">👁️</a>
+                    <a href={doc.file_url} download title="Download" class="btn-icon">📥</a>
+                    <button onclick={`shareWA('${doc.nama_penerima}', '${doc.file_url}')`} title="Share WA" class="btn-icon">📱</button>
+                    <button onclick={`toggleStatus(${doc.id}, '${doc.status}')`} title="Ubah Status" class="btn-icon" style="background: #333;">✏️</button>
+                    <button onclick={`hapusArsip(${doc.id}, '${doc.nama_dokumen}', '${doc.kategori}')`} class="btn-icon btn-del-mini">🗑️</button>
                 </div>
               </td>
             </tr>
@@ -90,12 +107,54 @@ const { data: dataTrx } = await supabase.from('transaksi').select('*');
   </section>
 </MainLayout>
 
+<style>
+  /* Tambahan Style khusus untuk Admin Arsip */
+  .input-gold {
+    width: 100%; padding: 10px; background: #111; border: 1px solid #333; color: white; border-radius: 8px; margin-top: 5px;
+  }
+  .input-gold:focus { border-color: var(--gold); outline: none; }
+  .select-mini { padding: 8px; border-radius: 8px; background: #151515; color: white; border: 1px solid var(--gold); font-size: 11px; }
+  .badge-green { background: #1b4332; color: #8ef9ad; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+  .badge-red { background: #431b1b; color: #f98e8e; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+  .action-btns-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+  .btn-icon { padding: 8px; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; text-decoration: none; text-align: center; cursor: pointer; transition: 0.3s; }
+  .btn-icon:hover { border-color: var(--gold); background: #222; }
+  .btn-del-mini:hover { background: #431b1b; border-color: #f98e8e; }
+</style>
+
 <script is:inline>
   const dbStore = document.getElementById('db-data');
   const SUPABASE_URL = dbStore.dataset.url;
   const SUPABASE_KEY = dbStore.dataset.key;
 
-  // Jaring pengaman agar tidak error saat generate
+  function filterArsip() {
+    const kat = document.getElementById('filterKategori').value;
+    const stat = document.getElementById('filterStatus').value;
+    document.querySelectorAll('#arsipBody tr').forEach(tr => {
+      const mKat = (kat === "Semua" || tr.dataset.kat === kat);
+      const mStat = (stat === "Semua" || tr.dataset.status === stat);
+      tr.style.display = (mKat && mStat) ? "" : "none";
+    });
+  }
+
+  function shareWA(penerima, url) {
+    const teks = `Halo ${penerima}, berikut adalah dokumen dari Lakoffie: ${url}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(teks)}`, '_blank');
+  }
+
+  async function toggleStatus(id, currentStatus) {
+    const newStatus = currentStatus === 'Belum Lunas' ? 'Lunas' : 'Belum Lunas';
+    if(!confirm(`Ubah status menjadi ${newStatus}?`)) return;
+    try {
+        await fetch(`${SUPABASE_URL}/rest/v1/arsip_dokumen?id=eq.${id}`, {
+            method: 'PATCH',
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus })
+        });
+        location.reload();
+    } catch(e) { alert("Gagal ubah status"); }
+  }
+
   async function generatePDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
@@ -103,15 +162,15 @@ const { data: dataTrx } = await supabase.from('transaksi').select('*');
     const urlTTD = "https://hlyviwpkxkrifgaapmzu.supabase.co/storage/v1/object/public/arsip-lakoffie/ttd.png";
 
     const kategori = document.getElementById('docKategori').value;
-    const penerima = document.getElementById('docPenerima').value || "Pelanggan";
-    const barang = document.getElementById('docBarang').value || "-";
-    const jumlah = document.getElementById('docJumlah').value || "0";
+    const status = document.getElementById('docStatus').value;
+    const penerima = document.getElementById('docPenerima').value || "-";
+    const barangArr = document.getElementById('docBarang').value.split(',');
+    const jumlahArr = document.getElementById('docJumlah').value.split(',');
+    const hargaArr = document.getElementById('docHarga').value.split(',');
 
-    btn.disabled = true; 
-    btn.innerText = "Proses Simpan Cloud...";
+    btn.disabled = true; btn.innerText = "Simpan Cloud...";
 
     try {
-      // 1. Hitung urutan (Fix: Pastikan response oke)
       const resCount = await fetch(`${SUPABASE_URL}/rest/v1/arsip_dokumen?kategori=eq.${kategori}&select=id`, {
           headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
       });
@@ -120,102 +179,68 @@ const { data: dataTrx } = await supabase.from('transaksi').select('*');
 
       const now = new Date();
       const d = String(now.getDate()).padStart(2, '0'), m = String(now.getMonth() + 1).padStart(2, '0'), y = now.getFullYear();
-      
-      let kode = "DOC";
-      if(kategori === "Faktur Penjualan") kode = "FKT-OUT";
-      else if(kategori === "Faktur Pembelian") kode = "FKT-IN";
-      else if(kategori === "Proposal") kode = "PRP";
-      else if(kategori === "Laporan Keuangan") kode = "LAP";
+      const noDoc = `${kategori === "Faktur Penjualan" ? "FKT-OUT" : "FKT-IN"}/${nextUrut}/${d}/${m}/${y}`;
+      const storagePath = `${kategori.replace(/ /g, '_')}/${noDoc.replace(/\//g, '-')}.pdf`;
 
-      const noDoc = `${kode}/${nextUrut}/${d}/${m}/${y}`;
-      // NAMA FILE HARUS KONSISTEN
-      const cleanFileName = `${kode}-${nextUrut}-${d}-${m}-${y}.pdf`;
-      const storagePath = `${kategori.replace(/ /g, '_')}/${cleanFileName}`;
-
-      // 2. Gambar PDF (Sama seperti kode Master)
+      // DESIGN PDF
+      doc.setDrawColor(0); doc.rect(5, 5, 200, 287); // Border
       doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.text("LAKOFFIE", 105, 20, {align: 'center'});
-      doc.setFont("helvetica", "italic"); doc.setFontSize(10); doc.text("Kopi Bubuk Murni Jujur", 105, 26, {align: 'center'});
-      doc.line(20, 30, 190, 30);
+      doc.setFont("helvetica", "italic"); doc.setFontSize(10); doc.text("Kopi Bubuk Murni", 105, 26, {align: 'center'});
+      doc.line(20, 32, 190, 32);
+
       doc.setFontSize(14); doc.text(kategori.toUpperCase(), 20, 45);
       doc.setFontSize(10); doc.setFont("helvetica", "normal");
-      doc.text(`Nomor: ${noDoc}`, 20, 52);
-      doc.text(`Tanggal: ${d}/${m}/${y}`, 20, 58);
-      doc.text(`Penerima: ${penerima}`, 20, 64);
+      doc.text(`Nomor    : ${noDoc}`, 20, 52);
+      doc.text(`Status   : ${status.toUpperCase()}`, 20, 58);
+      doc.text(`Penerima : ${penerima}`, 20, 64);
 
-      if(kategori.includes("Laporan")) {
-          const trx = JSON.parse(dbStore.dataset.trx || "[]");
-          doc.autoTable({ startY: 72, head: [['Tgl', 'Ket', 'Masuk', 'Keluar']], 
-              body: trx.map(t => [t.tanggal, t.keterangan, t.masuk, t.keluar]),
-              headStyles: { fillColor: [197, 160, 89] } 
-          });
-      } else {
-          doc.autoTable({ startY: 72, head: [['Deskripsi', 'Detail']], body: [['Barang/Project', barang], ['Nilai/Jumlah', jumlah]], headStyles: { fillColor: [197, 160, 89] } });
-      }
-
-      const finalY = (doc.lastAutoTable.finalY || 100) + 15;
-      doc.text("Hormat Kami,", 150, finalY);
-      try { doc.addImage(urlTTD, 'PNG', 145, finalY + 2, 30, 15); } catch(e){ console.log("TTD skipped"); }
-      doc.setFont("helvetica", "bold"); doc.text("LAKOFFIE", 150, finalY + 25);
-
-      const pdfBlob = doc.output('blob');
-
-      // 3. UPLOAD KE STORAGE (FIX: Tambahkan x-upsert)
-      const up = await fetch(`${SUPABASE_URL}/storage/v1/object/arsip-lakoffie/${storagePath}`, {
-          method: 'POST',
-          headers: { 
-            'apikey': SUPABASE_KEY, 
-            'Authorization': `Bearer ${SUPABASE_KEY}`, 
-            'x-upsert': 'true' // AGAR TIDAK ERROR JIKA FILE SUDAH ADA
-          },
-          body: pdfBlob
+      const tableData = barangArr.map((b, i) => {
+        const qty = parseInt(jumlahArr[i]) || 0;
+        const harga = parseInt(hargaArr[i]) || 0;
+        return [b.trim(), qty, `Rp ${harga.toLocaleString()}`, `Rp ${(qty * harga).toLocaleString()}`];
       });
 
-      if(!up.ok) {
-        const errData = await up.json();
-        throw new Error("Gagal Storage: " + (errData.message || up.statusText));
-      }
+      doc.autoTable({
+        startY: 72,
+        head: [['Nama Barang', 'Qty', 'Harga Satuan', 'Subtotal']],
+        body: tableData,
+        theme: 'grid',
+        headStyles: { fillColor: [197, 160, 89] },
+        foot: [[{content: 'TOTAL PEMBAYARAN', colSpan: 3, styles: {halign: 'right'}}, `Rp ${tableData.reduce((a,b) => a + parseInt(b[3].replace(/\D/g,'')), 0).toLocaleString()}`]],
+        footStyles: { fillColor: [240, 240, 240], textColor: [0,0,0], fontStyle: 'bold' }
+      });
 
-      // 4. SIMPAN DATA KE DATABASE
+      const finalY = doc.lastAutoTable.finalY + 15;
+      const rightX = 145;
+      doc.text(`Semarang, ${d}/${m}/${y}`, rightX, finalY);
+      doc.text("Hormat Kami,", rightX, finalY + 6);
+      try { doc.addImage(urlTTD, 'PNG', rightX - 5, finalY + 8, 30, 12); } catch(e){}
+      doc.setFont("helvetica", "bold"); doc.text("LAKOFFIE", rightX, finalY + 25);
+
+      const pdfBlob = doc.output('blob');
+      await fetch(`${SUPABASE_URL}/storage/v1/object/arsip-lakoffie/${storagePath}`, {
+          method: 'POST', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'x-upsert': 'true' }, body: pdfBlob
+      });
+
       const fileUrl = `${SUPABASE_URL}/storage/v1/object/public/arsip-lakoffie/${storagePath}`;
       await fetch(`${SUPABASE_URL}/rest/v1/arsip_dokumen`, {
           method: 'POST',
-          headers: { 
-            'apikey': SUPABASE_KEY, 
-            'Authorization': `Bearer ${SUPABASE_KEY}`, 
-            'Content-Type': 'application/json',
-            'Prefer': 'resolution=merge-duplicates' 
-          },
-          body: JSON.stringify({ nama_dokumen: noDoc, kategori, nama_penerima: penerima, file_url: fileUrl })
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nama_dokumen: noDoc, kategori, nama_penerima: penerima, file_url: fileUrl, status })
       });
 
-      alert("Berhasil! Dokumen tersimpan di Cloud.");
+      alert("Faktur Berhasil Disimpan!");
       location.reload();
-
-    } catch (err) { 
-      alert("Error: " + err.message); 
-      btn.disabled = false;
-      btn.innerText = "GENERATE & SIMPAN KE CLOUD";
-    }
+    } catch (err) { alert(err.message); btn.disabled = false; btn.innerText = "GENERATE"; }
   }
 
-  // FIX: Fungsi hapus harus tahu persis path di storage
   async function hapusArsip(id, noDoc, kategori) {
     if(!confirm(`Hapus permanen ${noDoc}?`)) return;
-    
-    // Path harus sama persis dengan saat upload
-    const cleanFileName = noDoc.replace(/\//g, '-') + ".pdf";
-    const storagePath = `${kategori.replace(/ /g, '_')}/${cleanFileName}`;
-
+    const storagePath = `${kategori.replace(/ /g, '_')}/${noDoc.replace(/\//g, '-')}.pdf`;
     try {
-        // Hapus Database
-        await fetch(`${SUPABASE_URL}/rest/v1/arsip_dokumen?id=eq.${id}`, {
-            method: 'DELETE', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-        });
-        // Hapus Storage
-        await fetch(`${SUPABASE_URL}/storage/v1/object/arsip-lakoffie/${storagePath}`, {
-            method: 'DELETE', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-        });
+        await fetch(`${SUPABASE_URL}/rest/v1/arsip_dokumen?id=eq.${id}`, { method: 'DELETE', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
+        await fetch(`${SUPABASE_URL}/storage/v1/object/arsip-lakoffie/${storagePath}`, { method: 'DELETE', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
         location.reload();
-    } catch (err) { alert("Gagal hapus sepenuhnya"); }
+    } catch (err) { alert("Gagal hapus"); }
   }
 </script>

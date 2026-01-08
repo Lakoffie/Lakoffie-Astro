@@ -3,6 +3,8 @@ import MainLayout from '../../layouts/MainLayout.astro';
 import { daftarMitra } from '../../data/mitra.ts';
 import '../../styles/mitra.css';
 
+export const prerender = true;
+
 export async function getStaticPaths() {
   return daftarMitra.map((mitra) => ({
     params: { id: mitra.id },

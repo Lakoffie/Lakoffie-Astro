@@ -7,6 +7,7 @@ export interface Kopi {
   harga: string;
   hargaPromo: string | null;
   image: string;
+  alt?: string;
   isNew: boolean;
   deskripsi: string;
 }
@@ -30,7 +31,7 @@ export const varianKopi: Kopi[] = [
     nama: 'Lokal Salatiga', 
     karakter: 'Pahit Dengan Sensasi Asam', 
     harga: 'Rp 18.000', 
-    hargaPromo: 15000,
+    hargaPromo: 'Rp 15.000',
     image: '/img/lakoffie-lokal-salatiga.png',
     alt: 'Kopi Lokal Salatiga Lakoffie - Perpaduan Rasa Pahit dan Sensasi Asam Segar Khas Pegunungan',
     isNew: true,

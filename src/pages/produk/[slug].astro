@@ -3,6 +3,9 @@
 import MainLayout from '../../layouts/MainLayout.astro';
 import { varianKopi } from '../../data/kopi';
 
+// 1. Tambahkan ini agar Astro tahu ini halaman statis
+export const prerender = true;
+
 export async function getStaticPaths() {
   return varianKopi.map((k) => ({
     params: { slug: k.slug },
@@ -10,7 +13,16 @@ export async function getStaticPaths() {
   }));
 }
 
-const { k } = Astro.props;
+// 2. Ambil k dari props, jika undefined (sering terjadi di dev mode), 
+// kita cari manual berdasarkan slug-nya agar tidak error
+const { k: propsK } = Astro.props;
+const slug = Astro.params.slug;
+const k = propsK || varianKopi.find(item => item.slug === slug);
+
+// 3. Cek lagi, jika benar-benar tidak ada baru lempar error
+if (!k) {
+  return Astro.redirect('/404');
+}
 ---
 
 <MainLayout title={`${k.nama} | Lakoffie`}>

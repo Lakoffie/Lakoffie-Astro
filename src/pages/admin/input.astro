@@ -17,6 +17,8 @@ const dataTransaksiServer = dataSupabase || [];
 
 <MainLayout title="Finance | Lakoffie">
   <link rel="stylesheet" href="/styles/admin.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" is:inline></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js" is:inline></script>
 
   <section class="admin-container">
     
@@ -65,14 +67,8 @@ const dataTransaksiServer = dataSupabase || [];
 
     <div class="glass-card" style="border-color: #333;">
       <div class="form-grid">
-        <div class="form-item">
-          <label>Dari Tanggal</label>
-          <input type="date" id="filterStart" onchange="updateTampilan()" />
-        </div>
-        <div class="form-item">
-          <label>Sampai Tanggal</label>
-          <input type="date" id="filterEnd" onchange="updateTampilan()" />
-        </div>
+        <div class="form-item"><label>Dari Tanggal</label><input type="date" id="filterStart" onchange="updateTampilan()" /></div>
+        <div class="form-item"><label>Sampai Tanggal</label><input type="date" id="filterEnd" onchange="updateTampilan()" /></div>
         <div class="form-item full">
           <label>Kategori Filter</label>
           <select id="filterJenis" onchange="updateTampilan()">
@@ -87,7 +83,10 @@ const dataTransaksiServer = dataSupabase || [];
           </select>
         </div>
       </div>
-      <button onclick="downloadData()" class="btn-download">📂 Download Excel (CSV)</button>
+      <div style="display: flex; gap: 10px; margin-top: 15px;">
+        <button onclick="downloadData()" class="btn-download" style="flex:1">📂 Excel (CSV)</button>
+        <button onclick="downloadPDF()" class="btn-primary" style="flex:1; background: #bf953f; color: black;">📄 Download PDF Resmi</button>
+      </div>
     </div>
 
     <div class="table-wrapper">
@@ -114,6 +113,7 @@ const dataTransaksiServer = dataSupabase || [];
   const dataStore = document.getElementById('data-store');
   let dataTransaksi = JSON.parse(dataStore?.getAttribute('data-json') || '[]');
   let isEditing = false;
+  let currentFilteredData = []; // Untuk menangkap data yang sedang tampil
 
   updateTampilan();
 
@@ -126,7 +126,7 @@ const dataTransaksiServer = dataSupabase || [];
     let tMasuk = 0; let tKeluar = 0;
     tableBody.innerHTML = "";
     
-    const filteredData = dataTransaksi.filter(t => {
+    currentFilteredData = dataTransaksi.filter(t => {
       const matchStart = fStart ? t.tanggal >= fStart : true;
       const matchEnd = fEnd ? t.tanggal <= fEnd : true;
       let matchJenis = true;
@@ -136,7 +136,7 @@ const dataTransaksiServer = dataSupabase || [];
       return matchStart && matchEnd && matchJenis;
     });
 
-    filteredData.forEach(t => {
+    currentFilteredData.forEach(t => {
       const masuk = Number(t.masuk) || 0;
       const keluar = Number(t.keluar) || 0;
       tMasuk += masuk; tKeluar += keluar;
@@ -161,9 +161,93 @@ const dataTransaksiServer = dataSupabase || [];
     document.getElementById('totalSaldo').innerText = `Rp ${(tMasuk - tKeluar).toLocaleString()}`;
   }
 
+  // --- FUNGSI DOWNLOAD PDF RESMI PT MAFISA JAYA BERKAH ---
+  function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'mm', 'a4');
+    
+    const now = new Date();
+    const formatTgl = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    // 1. FRAME / BORDER KOTAK
+    doc.setDrawColor(40, 40, 40);
+    doc.setLineWidth(0.5);
+    doc.rect(5, 5, 200, 287); // Border luar A4
+
+    // 2. HEADER
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text("LAPORAN TRANSAKSI", 105, 20, { align: "center" });
+    
+    doc.setFontSize(14);
+    doc.text("PT MAFISA JAYA BERKAH", 105, 28, { align: "center" });
+    
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Dicetak pada: ${formatTgl}`, 105, 35, { align: "center" });
+    
+    doc.line(15, 40, 195, 40); // Garis bawah header
+
+    // 3. TABEL TRANSAKSI & TOTAL SALDO
+    let totalMasuk = 0;
+    let totalKeluar = 0;
+
+    const tableRows = currentFilteredData.map(t => {
+      totalMasuk += Number(t.masuk || 0);
+      totalKeluar += Number(t.keluar || 0);
+      return [
+        t.tanggal,
+        t.keterangan,
+        t.jenis,
+        `Rp ${(Number(t.masuk) || 0).toLocaleString()}`,
+        `Rp ${(Number(t.keluar) || 0).toLocaleString()}`
+      ];
+    });
+
+    // Tambahkan baris TOTAL di paling bawah tabel
+    tableRows.push([
+      { content: 'TOTAL KESELURUHAN', colSpan: 3, styles: { halign: 'right', fontStyle: 'bold', fillColor: [240, 240, 240] } },
+      { content: `Rp ${totalMasuk.toLocaleString()}`, styles: { fontStyle: 'bold', fillColor: [240, 240, 240] } },
+      { content: `Rp ${totalKeluar.toLocaleString()}`, styles: { fontStyle: 'bold', fillColor: [240, 240, 240] } }
+    ]);
+    
+    // Baris SALDO AKHIR
+    tableRows.push([
+      { content: 'SALDO AKHIR', colSpan: 3, styles: { halign: 'right', fontStyle: 'bold', fillColor: [197, 160, 89] } },
+      { content: `Rp ${(totalMasuk - totalKeluar).toLocaleString()}`, colSpan: 2, styles: { halign: 'center', fontStyle: 'bold', fillColor: [197, 160, 89], textColor: [0, 0, 0] } }
+    ]);
+
+    doc.autoTable({
+      startY: 45,
+      head: [['Tanggal', 'Keterangan', 'Kategori', 'Masuk', 'Keluar']],
+      body: tableRows,
+      theme: 'grid',
+      headStyles: { fillColor: [40, 40, 40], textColor: [255, 255, 255] },
+      margin: { left: 15, right: 15 },
+      styles: { fontSize: 8 }
+    });
+
+    // 4. FOOTER / TANDA TANGAN (RATA KANAN)
+    const finalY = doc.lastAutoTable.finalY + 15;
+    const signPosX = 140;
+
+    doc.setFontSize(10);
+    doc.text(`Semarang, ${formatTgl}`, signPosX, finalY);
+    doc.text("Direktur Utama,", signPosX, finalY + 6);
+    
+    // Ruang Tanda Tangan
+    doc.text("..........................................", signPosX, finalY + 22);
+    
+    doc.setFont("helvetica", "bold");
+    doc.text("Mahbub Azis Fatkhul Dawam", signPosX, finalY + 28);
+
+    doc.save(`Laporan_Keuangan_PT_MJB_${now.getTime()}.pdf`);
+  }
+
+  // --- Fungsi Lainnya Tetap ---
   function downloadData() {
     const headers = ["Tanggal", "Keterangan", "Jenis", "Masuk", "Keluar"];
-    const rows = dataTransaksi.map(t => [t.tanggal, t.keterangan, t.jenis, t.masuk, t.keluar]);
+    const rows = currentFilteredData.map(t => [t.tanggal, t.keterangan, t.jenis, t.masuk, t.keluar]);
     let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + rows.map(e => e.join(",")).join("\n");
     const link = document.createElement("a");
     link.setAttribute("href", encodeURI(csvContent));
@@ -209,6 +293,8 @@ const dataTransaksiServer = dataSupabase || [];
     document.getElementById('btnSimpan').innerText = "SIMPAN DATA";
     document.getElementById('btnCancel').style.display = "none";
     document.getElementById('keterangan').value = "";
+    document.getElementById('masuk').value = 0;
+    document.getElementById('keluar').value = 0;
   }
 
   async function hapusData(id) {
