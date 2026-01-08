@@ -5,7 +5,7 @@ import { getCollection } from 'astro:content';
 import { varianKopi } from '../data/kopi'; 
 import '../styles/home.css';
 
-// 1. Ambil 3 artikel terbaru
+// 1. Ambil 3 artikel terbaru dengan pengamanan data
 const semuaArtikel = await getCollection('artikel');
 const artikelTerbaru = semuaArtikel
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
@@ -151,13 +151,17 @@ const produkBaru = varianKopi.find(k => k.isNew);
           <article class="luxury-journal-card">
             <div class="journal-visual">
               <img src={post.data.image} alt={post.data.alt} loading="lazy" />
-              <div class="journal-tag-float">{post.data.tags[0]}</div>
+              <div class="journal-tag-float">{post.data.tags?.[0] || 'Coffee'}</div>
             </div>
             <div class="journal-body">
               <h3>{post.data.title}</h3>
-              <p>{post.data.description.substring(0, 95)}...</p>
+              <p>
+                {post.data.description 
+                  ? post.data.description.substring(0, 95) + "..." 
+                  : "Jelajahi wawasan menarik seputar dunia kopi murni Lakoffie selengkapnya di sini."}
+              </p>
               <div class="journal-footer">
-                <a href={`/artikel/${post.slug}`} class="link-explore">
+                <a href={`/artikel/${post.slug || post.id}`} class="link-explore">
                   Jelajahi Cerita
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </a>
@@ -220,108 +224,25 @@ const produkBaru = varianKopi.find(k => k.isNew);
 </MainLayout>
 
 <style>
-  /* --- Style Khusus Seksi Artikel Master --- */
-  .home-journal {
-    padding: 6rem 0;
-    background: #0c0b0a;
-  }
-  .journal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 3.5rem;
-  }
-  .journal-preview-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 2.5rem;
-  }
-  .luxury-journal-card {
-    background: #141311;
-    border-radius: 20px;
-    overflow: hidden;
-    border: 1px solid rgba(191, 149, 63, 0.15); /* Border Emas Halus */
-    transition: all 0.4s ease;
-  }
-  .luxury-journal-card:hover {
-    transform: translateY(-10px);
-    border-color: rgba(191, 149, 63, 0.5);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.5);
-  }
-  .journal-visual {
-    height: 220px;
-    position: relative;
-    overflow: hidden;
-  }
-  .journal-visual img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: brightness(0.7);
-    transition: 0.5s;
-  }
-  .luxury-journal-card:hover .journal-visual img {
-    filter: brightness(1);
-    transform: scale(1.05);
-  }
-  .journal-tag-float {
-    position: absolute;
-    bottom: 15px;
-    left: 15px;
-    background: var(--gold);
-    color: #000;
-    font-size: 0.65rem;
-    font-weight: bold;
-    padding: 4px 12px;
-    border-radius: 4px;
-    text-transform: uppercase;
-  }
-  .journal-body {
-    padding: 2rem;
-  }
-  .journal-body h3 {
-    color: #fff;
-    font-family: serif;
-    font-size: 1.4rem;
-    margin-bottom: 1rem;
-    line-height: 1.3;
-  }
-  .journal-body p {
-    color: #888;
-    font-size: 0.9rem;
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-  }
-  .journal-footer {
-    border-top: 1px solid rgba(255,255,255,0.05);
-    padding-top: 1.5rem;
-  }
-  .link-explore {
-    color: var(--gold);
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: 0.3s;
-  }
-  .link-explore:hover {
-    gap: 15px;
-  }
-  .btn-text-gold {
-    color: var(--gold);
-    text-decoration: none;
-    font-weight: bold;
-    border-bottom: 1px solid transparent;
-    transition: 0.3s;
-  }
-  .btn-text-gold:hover {
-    border-color: var(--gold);
-  }
-  @media (max-width: 768px) {
-    .journal-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
-  }
+  /* --- Style Tetap Sama --- */
+  .home-journal { padding: 6rem 0; background: #0c0b0a; }
+  .journal-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3.5rem; }
+  .journal-preview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; }
+  .luxury-journal-card { background: #141311; border-radius: 20px; overflow: hidden; border: 1px solid rgba(191, 149, 63, 0.15); transition: all 0.4s ease; }
+  .luxury-journal-card:hover { transform: translateY(-10px); border-color: rgba(191, 149, 63, 0.5); box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
+  .journal-visual { height: 220px; position: relative; overflow: hidden; }
+  .journal-visual img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7); transition: 0.5s; }
+  .luxury-journal-card:hover .journal-visual img { filter: brightness(1); transform: scale(1.05); }
+  .journal-tag-float { position: absolute; bottom: 15px; left: 15px; background: var(--gold); color: #000; font-size: 0.65rem; font-weight: bold; padding: 4px 12px; border-radius: 4px; text-transform: uppercase; }
+  .journal-body { padding: 2rem; }
+  .journal-body h3 { color: #fff; font-family: serif; font-size: 1.4rem; margin-bottom: 1rem; line-height: 1.3; }
+  .journal-body p { color: #888; font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.5rem; height: 3.2em; overflow: hidden; }
+  .journal-footer { border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1.5rem; }
+  .link-explore { color: var(--gold); text-decoration: none; font-weight: bold; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+  .link-explore:hover { gap: 15px; }
+  .btn-text-gold { color: var(--gold); text-decoration: none; font-weight: bold; border-bottom: 1px solid transparent; transition: 0.3s; }
+  .btn-text-gold:hover { border-color: var(--gold); }
+  @media (max-width: 768px) { .journal-header { flex-direction: column; align-items: flex-start; gap: 1rem; } }
 </style>
 
 <script is:inline>
@@ -329,21 +250,18 @@ const produkBaru = varianKopi.find(k => k.isNew);
     const modal = document.getElementById('newProductModal');
     const closeBtn = document.getElementById('closeModal');
     const hasSeenPopup = sessionStorage.getItem('seenNewProduct');
-    
     if (!hasSeenPopup && modal) {
       setTimeout(() => {
         modal.style.display = 'flex';
         modal.style.opacity = '1';
       }, 4000);
     }
-
     const handleClose = () => {
       if(modal) {
         modal.style.display = 'none';
         sessionStorage.setItem('seenNewProduct', 'true');
       }
     };
-
     closeBtn?.addEventListener('click', handleClose);
     window.addEventListener('click', (e) => { if (e.target === modal) handleClose(); });
   });

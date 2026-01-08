@@ -711,3 +711,53 @@
     gap: 15px;
   }
 }
+  /* --- Style Luxury CTA Bottom --- */
+  .cta-bottom {
+    margin-top: 4rem;
+    padding: 3rem;
+    background: linear-gradient(135deg, #161412 0%, #0c0b0a 100%);
+    border-radius: 20px;
+    border: 1px solid rgba(212, 175, 55, 0.1);
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .cta-bottom p {
+    font-family: serif;
+    font-size: 1.4rem;
+    color: #fff;
+    margin-bottom: 2rem;
+    line-height: 1.4;
+  }
+
+  .cta-bottom .btn-outline {
+    display: inline-block;
+    padding: 12px 35px;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    text-decoration: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.85rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+
+  .cta-bottom .btn-outline:hover {
+    background: var(--gold);
+    color: #000;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2);
+  }
+
+  /* Responsif untuk HP */
+  @media (max-width: 768px) {
+    .cta-bottom {
+      padding: 2rem 1.5rem;
+      margin-top: 3rem;
+    }
+    .cta-bottom p {
+      font-size: 1.1rem;
+    }
+  }
