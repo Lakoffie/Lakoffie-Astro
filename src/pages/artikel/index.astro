@@ -1,13 +1,10 @@
 ---
-// src/pages/artikel/index.astro
 import { getCollection } from 'astro:content';
 import MainLayout from '../../layouts/MainLayout.astro';
 import '../../styles/artikel.css';
 
-// 1. Ambil semua artikel dari folder src/content/artikel/
 const semuaArtikel = await getCollection('artikel');
 
-// 2. Urutkan dari yang terbaru
 const sortedArtikel = semuaArtikel.sort((a, b) => 
   b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
@@ -17,22 +14,20 @@ const categories = ['Semua', 'Tips', 'Edukasi', 'Trending'];
 
 <MainLayout title="Artikel Lakoffie | Inspirasi Kopi Murni">
   <div class="article-page-wrapper">
-    
     <div class="container" style="padding: 80px 0 40px; text-align: center;">
       <span style="color: var(--gold); letter-spacing: 5px; font-size: 0.7rem; text-transform: uppercase; display: block; margin-bottom: 10px;">The Coffee Journal</span>
       <h1 style="font-family: serif; font-size: clamp(2rem, 5vw, 3.5rem); margin-top: 10px;">Inspirasi & <span style="color: var(--gold)">Edukasi</span></h1>
-      <p style="color: #888; max-width: 600px; margin: 20px auto 0;">Menjelajahi dunia kopi dari hulu hingga ke cangkir Anda. Temukan tips menyeduh dan cerita di balik setiap biji kopi.</p>
     </div>
 
     <div class="container">
       <div class="blog-controls">
         <div class="tabs">
           {categories.map(cat => (
-            <button class="tab-btn {cat === 'Semua' ? 'active' : ''}" data-category={cat}>{cat}</button>
+            <button class="tab-btn" data-category={cat}>{cat}</button>
           ))}
         </div>
         <div class="search-wrapper">
-           <input type="text" id="searchBlog" placeholder="Cari judul atau topik..." />
+           <input type="text" id="searchBlog" placeholder="Cari judul..." />
         </div>
       </div>
 
@@ -44,12 +39,10 @@ const categories = ['Semua', 'Tips', 'Edukasi', 'Trending'];
               <div class="card-tag">{a.data.tags[0]}</div>
             </div>
             <div class="blog-content">
-              <span class="blog-date">
-                {a.data.pubDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
-              </span>
+              <span class="blog-date">{a.data.pubDate.toLocaleDateString('id-ID')}</span>
               <h3>{a.data.title}</h3>
               <p>{a.data.description}</p>
-              <a href={`/artikel/${a.slug}`} class="read-link">Baca Selengkapnya →</a>
+              <a href={`/artikel/${a.slug || a.id}`} class="read-link">Baca Selengkapnya →</a>
             </div>
           </article>
         ))}
@@ -58,36 +51,27 @@ const categories = ['Semua', 'Tips', 'Edukasi', 'Trending'];
   </div>
 </MainLayout>
 
-<script>
-  const searchInput = document.getElementById('searchBlog') as HTMLInputElement;
-  const cards = document.querySelectorAll('.blog-card') as NodeListOf<HTMLElement>;
+<script is:inline>
+  const searchInput = document.getElementById('searchBlog');
+  const cards = document.querySelectorAll('.blog-card');
   const tabBtns = document.querySelectorAll('.tab-btn');
 
-  // Logic Live Search
   searchInput?.addEventListener('input', () => {
     const val = searchInput.value.toLowerCase();
     cards.forEach(card => {
-      const title = card.querySelector('h3')?.innerText.toLowerCase() || '';
-      const desc = card.querySelector('p')?.innerText.toLowerCase() || '';
-      card.style.display = (title.includes(val) || desc.includes(val)) ? 'block' : 'none';
+      const text = card.innerText.toLowerCase();
+      card.style.display = text.includes(val) ? 'block' : 'none';
     });
   });
 
-  // Logic Tab Filter
   tabBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      const selectedCat = (btn as HTMLElement).dataset.category?.toLowerCase();
-      
+      const cat = btn.dataset.category.toLowerCase();
       tabBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-
       cards.forEach(card => {
-        const cardCat = card.dataset.category?.toLowerCase();
-        if (selectedCat === 'semua' || cardCat === selectedCat) {
-          card.style.display = 'block';
-        } else {
-          card.style.display = 'none';
-        }
+        const cardCat = card.dataset.category.toLowerCase();
+        card.style.display = (cat === 'semua' || cardCat === cat) ? 'block' : 'none';
       });
     });
   });

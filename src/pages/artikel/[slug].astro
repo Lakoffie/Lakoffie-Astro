@@ -1,93 +1,192 @@
 ---
-// src/pages/artikel/[slug].astro
 import { getCollection } from 'astro:content';
 import MainLayout from '../../layouts/MainLayout.astro';
 import '../../styles/artikel.css';
 
 export async function getStaticPaths() {
   const semuaArtikel = await getCollection('artikel');
-  
+  // Pastikan sortir berdasarkan tanggal
   const urutanArtikel = semuaArtikel.sort((a, b) => 
     b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
   );
 
-  return urutanArtikel.map((entry, index) => {
-    return {
-      params: { slug: entry.slug },
-      props: { 
-        entry, 
-        prev: urutanArtikel[index + 1] || null,
-        next: urutanArtikel[index - 1] || null 
-      },
-    };
-  });
+  return urutanArtikel.map((entry, index) => ({
+    params: { slug: entry.slug || entry.id },
+    props: { 
+      entry, 
+      // Menggunakan index untuk mencari artikel sebelum dan sesudah
+      prev: urutanArtikel[index + 1] || null,
+      next: urutanArtikel[index - 1] || null 
+    },
+  }));
 }
 
 const { entry, prev, next } = Astro.props;
-const { Content } = await entry.render();
+
+// Fallback jika props tidak terkirim (untuk keamanan)
+let finalEntry = entry;
+if (!finalEntry) {
+  const { slug } = Astro.params;
+  const koleksi = await getCollection('artikel');
+  finalEntry = koleksi.find((a) => (a.slug || a.id) === slug);
+}
+
+if (!finalEntry) return Astro.redirect('/404');
+
+const { Content } = await finalEntry.render();
+
+// --- LOGIKA CTA DINAMIS ---
+const tag = finalEntry.data.tags[0]?.toLowerCase() || 'edukasi';
+let ctaData = {
+  title: "Ingin Merasakan Kejujurannya?",
+  desc: "Buktikan sendiri karakter unik biji kopi pilihan Lakoffie.",
+  link: "https://wa.me/6285175285640",
+  btn: "Pesan Sekarang"
+};
+
+if (tag === 'edukasi') {
+  ctaData = {
+    title: "Satu Cangkir, Beribu Cerita",
+    desc: "Perdalam ilmu kopi Anda dengan mencicipi single origin terbaik kami.",
+    link: "https://wa.me/6285175285640",
+    btn: "Konsultasi Rasa"
+  };
+} else if (tag === 'tips') {
+  ctaData = {
+    title: "Alat Seduh Saja Tidak Cukup",
+    desc: "Gunakan biji kopi fresh-roast agar tips di atas memberikan hasil maksimal.",
+    link: "https://wa.me/6285175285640",
+    btn: "Cek Stok Biji Fresh"
+  };
+}
 ---
 
-<MainLayout title={entry.data.title}>
-  <div class="reading-line"></div>
-
-  <article class="single-post-luxury">
-    <div class="container-small">
-      <header class="post-header-pro">
-        <div class="meta-top">
-          <span class="category-pill">{entry.data.tags[0] || "Edukasi"}</span>
-          <span class="read-time">Estimasi 3 Menit Baca</span>
+<MainLayout title={`${finalEntry.data.title} | Lakoffie`}>
+  <article class="article-premium">
+    <div class="container-narrow">
+      
+      <header class="art-header">
+        <div class="art-meta-top">
+          <span class="art-tag">{finalEntry.data.tags[0]}</span>
+          <span class="art-dot"></span>
+          <span class="art-read">5 Menit Baca</span>
         </div>
-        <h1 class="glare-text">{entry.data.title}</h1>
-        <div class="post-info">
-          <span class="author">Oleh <strong>{entry.data.author}</strong></span>
-          <span class="separator">|</span>
-          <span class="date">{entry.data.pubDate.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+        <h1 class="art-title">{finalEntry.data.title}</h1>
+        <div class="art-author-info">
+          <img src="/img/logo-fav.png" alt="Lakoffie" class="auth-img" />
+          <div class="auth-text">
+            <strong>{finalEntry.data.author}</strong>
+            <span>{finalEntry.data.pubDate.toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'})}</span>
+          </div>
         </div>
       </header>
-      
-      <div class="featured-image-wrapper">
-        <img src={entry.data.image} alt={entry.data.alt} class="featured-image" />
+
+      <div class="art-featured-wrapper">
+        <img src={finalEntry.data.image} alt={finalEntry.data.alt} class="art-featured-img" />
       </div>
-      
-      <div class="post-body-content">
+
+      <div class="art-content-body">
         <Content />
       </div>
 
-      <div class="luxury-hook">
-        <div class="hook-content">
-          <h3>Ingin Merasakan Karakter Aslinya?</h3>
-          <p>Setiap biji kopi Lakoffie diproses untuk mempertahankan kejujuran rasa dari tanah asalnya.</p>
-          <a href="https://wa.me/6285175285640" class="btn-wa-premium">
-             Konsultasi Rasa via WhatsApp
-          </a>
+      <div class="art-cta-box">
+        <div class="cta-inner">
+          <span class="cta-badge">Rekomendasi</span>
+          <h3>{ctaData.title}</h3>
+          <p>{ctaData.desc}</p>
+          <a href={ctaData.link} class="btn-cta-gold" target="_blank">{ctaData.btn}</a>
         </div>
       </div>
 
-      <nav class="post-nav">
-        <div class="nav-box">
-          {prev ? (
-            <a href={`/artikel/${prev.slug}`} class="nav-item">
-              <span class="nav-dir">← ARTIKEL LAMA</span>
-              <p>{prev.data.title}</p>
-            </a>
-          ) : (
-            <div class="empty-nav"></div>
-          )}
+      <footer class="art-footer-nav">
+        <div class="nav-links-grid">
+          
+          <div class="nav-side">
+            {prev && (
+              <a href={`/artikel/${prev.slug || prev.id}`} class="nav-card">
+                <small>← SEBELUMNYA</small>
+                <p>{prev.data.title}</p>
+              </a>
+            )}
+          </div>
 
-          {next ? (
-            <a href={`/artikel/${next.slug}`} class="nav-item next">
-              <span class="nav-dir">ARTIKEL BARU →</span>
-              <p>{next.data.title}</p>
+          <div class="nav-center">
+            <a href="/artikel" class="back-to-list">
+              Kembali ke Artikel
             </a>
-          ) : (
-            <div class="empty-nav"></div>
-          )}
+          </div>
+
+          <div class="nav-side">
+            {next && (
+              <a href={`/artikel/${next.slug || next.id}`} class="nav-card next">
+                <small>SELANJUTNYA →</small>
+                <p>{next.data.title}</p>
+              </a>
+            )}
+          </div>
+
         </div>
-        
-        <div class="footer-nav">
-          <a href="/artikel" class="back-home">Lihat Koleksi Artikel Lainnya</a>
-        </div>
-      </nav>
+      </footer>
+
     </div>
   </article>
 </MainLayout>
+
+<style is:global>
+  .article-premium { background: #0c0b0a; color: #f0f0f0; padding: 120px 0; }
+  .container-narrow { max-width: 740px; margin: 0 auto; padding: 0 1.5rem; }
+
+  .art-header { text-align: center; margin-bottom: 3.5rem; }
+  .art-meta-top { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 1.5rem; }
+  .art-tag { color: var(--gold); border: 1px solid var(--gold); padding: 4px 15px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
+  .art-dot { width: 4px; height: 4px; background: #444; border-radius: 50%; }
+  .art-read { color: #666; font-size: 0.8rem; }
+  .art-title { font-family: serif; font-size: clamp(2.2rem, 5vw, 3.8rem); line-height: 1.1; margin-bottom: 2rem; color: #fff; }
+
+  .art-author-info { display: flex; align-items: center; justify-content: center; gap: 15px; }
+  .auth-img { width: 45px; height: 45px; border-radius: 50%; border: 1px solid var(--gold); }
+  .auth-text { text-align: left; line-height: 1.3; }
+  .auth-text strong { display: block; font-size: 0.95rem; color: #fff; }
+  .auth-text span { font-size: 0.8rem; color: #666; }
+
+  .art-featured-wrapper { margin-bottom: 4rem; border-radius: 20px; overflow: hidden; }
+  .art-featured-img { width: 100%; height: auto; display: block; }
+
+  /* KONTEN BODY */
+  .art-content-body { font-size: 1.15rem; line-height: 1.9; color: #ccc; }
+  .art-content-body h2 { color: #fff; font-family: serif; font-size: 2rem; margin: 3rem 0 1.5rem; border-left: 4px solid var(--gold); padding-left: 20px; }
+  .art-content-body h3 { color: var(--gold); font-size: 1.4rem; margin: 2rem 0 1rem; }
+  .art-content-body p { margin-bottom: 1.8rem; }
+  .art-content-body blockquote { background: #161412; padding: 2rem; border-radius: 10px; border-left: 2px solid var(--gold); font-style: italic; color: #fff; margin: 2.5rem 0; }
+  .art-content-body strong { color: #fff; font-weight: 600; }
+  .art-content-body ul { margin-bottom: 1.8rem; padding-left: 1.5rem; list-style: circle; color: var(--gold); }
+  .art-content-body ul li { color: #ccc; margin-bottom: 10px; }
+
+  /* CTA BOX */
+  .art-cta-box { margin: 5rem 0; }
+  .cta-inner { background: #161412; padding: 3rem; border-radius: 20px; border: 1px solid rgba(212,175,55,0.2); text-align: center; position: relative; }
+  .cta-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--gold); color: #000; font-size: 0.7rem; font-weight: bold; padding: 4px 20px; border-radius: 4px; text-transform: uppercase; }
+  .cta-inner h3 { font-family: serif; font-size: 1.8rem; color: #fff; margin-bottom: 1rem; }
+  .btn-cta-gold { display: inline-block; background: var(--gold); color: #000; padding: 12px 35px; border-radius: 5px; text-decoration: none; font-weight: bold; margin-top: 1.5rem; transition: 0.3s; }
+
+  /* FOOTER NAV (FIXED) */
+  .art-footer-nav { margin-top: 6rem; padding-top: 3rem; border-top: 1px solid rgba(255,255,255,0.1); }
+  .nav-links-grid { display: flex; justify-content: space-between; align-items: center; gap: 15px; }
+  .nav-side { flex: 1; }
+  .nav-center { flex: 0 0 auto; }
+  
+  .nav-card { text-decoration: none; display: block; padding: 15px; background: #111; border-radius: 8px; border: 1px solid transparent; transition: 0.3s; }
+  .nav-card:hover { border-color: var(--gold); }
+  .nav-card small { color: #555; font-size: 0.7rem; display: block; margin-bottom: 5px; }
+  .nav-card p { color: #fff; font-size: 0.85rem; margin: 0; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .nav-card.next { text-align: right; }
+
+  .back-to-list { text-decoration: none; color: var(--gold); font-size: 0.85rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; padding: 10px 20px; border: 1px solid var(--gold); border-radius: 4px; transition: 0.3s; }
+  .back-to-list:hover { background: var(--gold); color: #000; }
+
+  @media (max-width: 768px) {
+    .nav-links-grid { flex-direction: column; text-align: center; }
+    .nav-side { width: 100%; }
+    .nav-center { order: -1; margin-bottom: 30px; }
+  }
+</style>

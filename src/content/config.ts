@@ -1,9 +1,10 @@
+// src/content/config.ts
 import { defineCollection, z } from 'astro:content';
 
 const artikelCollection = defineCollection({
+  type: 'content',
   schema: z.object({
     title: z.string(),
-    description: z.string(),
     pubDate: z.date(),
     author: z.string(),
     image: z.string(),
@@ -12,6 +13,7 @@ const artikelCollection = defineCollection({
   }),
 });
 
+// NAMA KEY DI SINI HARUS SAMA DENGAN NAMA FOLDER DI src/content/
 export const collections = {
-  'artikel': artikelCollection, // Nama koleksi jadi 'artikel'
+  'artikel': artikelCollection,
 };
