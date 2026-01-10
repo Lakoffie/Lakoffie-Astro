@@ -135,7 +135,7 @@ export const daftarMitra: Mitra[] = [
     wilayah: 'Kab. Semarang',
     kecamatan: 'Bringin',
     jenis: 'Toko',
-    image: '/img/mitra/toko-mbak.jpg',
+    image: '/img/mitra/toko-sumber-rejeki.png',
     gmaps: 'https://maps.app.goo.gl/HECRzEscr585UGdP9?g_st=ac',
     lat: -7.2808086,
     lng: 110.5237630 // PERBAIKAN: ling -> lng
