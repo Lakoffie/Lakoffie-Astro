@@ -1,0 +1,171 @@
+/* --- 1. LAKOFFIE BRIGHT SYSTEM --- */
+:root {
+  --primary-blue: #0077b6; /* Biru Cerah Profesional */
+  --light-blue: #eef7ff;   /* Background Biru Sangat Muda */
+  --accent-blue: #00b4d8;  /* Biru Muda untuk Hover */
+  --white: #ffffff;
+  --text-dark: #1a1a1a;    /* Abu-abu gelap (lebih nyaman dari hitam pekat) */
+  --text-soft: #555555;    /* Untuk deskripsi */
+  --border-light: #e0eef5;
+}
+
+body {
+  background-color: var(--white);
+  color: var(--text-dark);
+  font-family: 'Inter', sans-serif; /* Pastikan font ini diimport di Layout */
+}
+
+/* --- 2. HERO SECTION --- */
+.hero {
+  min-height: 80svh;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  background: linear-gradient(135deg, #ffffff 0%, #eef7ff 100%);
+  padding-top: 120px;
+}
+
+.glare-text {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  color: var(--text-dark);
+}
+
+.glare-text span {
+  color: var(--primary-blue);
+  font-style: normal;
+  background: linear-gradient(to right, var(--primary-blue), var(--accent-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.marketing-hook {
+  border-left: 3px solid var(--primary-blue);
+  background: rgba(0, 119, 182, 0.05);
+  padding: 1rem 1.5rem;
+}
+
+.hero-intro-bold { color: var(--primary-blue); font-weight: 700; }
+.hero-desc { color: var(--text-soft); }
+
+/* --- 3. VALUE BAR --- */
+.value-bar-luxury {
+  background: var(--white);
+  padding: 5rem 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.value-icon-circle {
+  border: 2px solid var(--primary-blue);
+  color: var(--primary-blue);
+  font-weight: bold;
+  background: var(--white);
+}
+
+.value-info h3 { color: var(--text-dark); }
+.value-info p { color: var(--text-soft); }
+
+/* --- 4. SENSORY & CTA --- */
+.fact-item {
+  background: var(--light-blue);
+  border: 1px solid var(--border-light);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+}
+
+.fact-text strong { color: var(--primary-blue); }
+
+.cta-bottom {
+  background: var(--primary-blue);
+  color: white;
+  border: none;
+}
+.cta-bottom p { color: white; }
+.btn-outline-large {
+  border: 2px solid white;
+  color: white;
+}
+.btn-outline-large:hover {
+  background: white;
+  color: var(--primary-blue);
+}
+
+/* --- 5. PRODUCTS SECTION --- */
+.products { background: #fcfdfe; }
+
+.product-card {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.product-card:hover {
+  border-color: var(--primary-blue);
+  box-shadow: 0 15px 45px rgba(0, 119, 182, 0.12);
+}
+
+.card-image::after {
+  background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.2));
+}
+
+.pure-badge {
+  background: var(--primary-blue);
+  color: white;
+}
+
+.series-label { color: var(--accent-blue); }
+.card-info h3 { color: var(--text-dark); }
+.price { color: var(--primary-blue); }
+.old-price { color: #aaa; }
+
+.btn-gold { /* Sekarang jadi btn-blue */
+  background: var(--primary-blue);
+  color: white;
+}
+.btn-gold:hover { background: var(--accent-blue); color: white; }
+
+.btn-outline {
+  border: 1px solid var(--primary-blue);
+  color: var(--primary-blue);
+}
+
+/* --- 6. HOME JOURNAL --- */
+.home-journal { background: var(--white); }
+.luxury-journal-card {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+}
+.journal-tag-float { background: var(--accent-blue); color: white; }
+.journal-body h3 { color: var(--text-dark); }
+.journal-body p { color: var(--text-soft); }
+
+/* --- 7. TESTIMONIALS --- */
+.testi { background: var(--light-blue); }
+.testi-card {
+  background: var(--white);
+  border: none;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+}
+.testi-card cite { color: var(--primary-blue); }
+
+/* --- 8. MODAL POPUP --- */
+.modal-content {
+  background: var(--white);
+  border: none;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+}
+.modal-body h2 { color: var(--text-dark); }
+.modal-desc { color: var(--text-soft); }
+.btn-primary-modal { background: var(--primary-blue); color: white; }
+
+/* --- UI BADGE & OTHERS --- */
+.badge {
+  color: var(--primary-blue);
+  border-color: var(--primary-blue);
+  background: var(--light-blue);
+}
+
+.btn-mitra-luxury {
+  background: var(--primary-blue);
+  color: white;
+  border: none;
+}
