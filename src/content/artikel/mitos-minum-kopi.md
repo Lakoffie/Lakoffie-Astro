@@ -2,7 +2,7 @@
 title: "Ngopi Pagi Bikin Perut Begah & Asam Lambung Naik: Mitos, Fakta, atau Salah Pilih Kopi?"
 description: "Banyak yang nyalahin kopi pagi sebagai biang mules dan maag. Tapi jangan-jangan masalahnya bukan di kopinya, melainkan di jenis dan kualitas kopi yang kita minum."
 pubDate: 2026-01-13
-author: "Master Lakoffie"
+author: "Lakoffie"
 image: "/img/blog/kopi-pagi-lambung.jpg"
 alt: "Secangkir kopi pagi di meja sarapan dengan ekspresi perut tidak nyaman"
 tags: ["Edukasi"]

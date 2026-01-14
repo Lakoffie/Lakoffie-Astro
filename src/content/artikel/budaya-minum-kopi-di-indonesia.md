@@ -1,11 +1,11 @@
 ---
 title: "Membedah Budaya Minum Kopi di Indonesia: Dari Warung Tradisional ke Gaya Hidup Modern"
 description: "Bagaimana secangkir kopi menjadi perekat sosial di Indonesia, mulai dari tradisi tubruk hingga kopi susu kekinian."
-pubDate: 2024-05-22
-author: "Master Lakoffie"
+pubDate: 2026-01-10
+author: "Lakoffie"
 image: "/img/blog/budaya-kopi.jpg"
 alt: "Orang-orang berkumpul di warung kopi tradisional Indonesia"
-tags: ["Edukasi"]
+tags: ["Sejarah"]
 ---
 
 # Kopi di Indonesia: Lebih dari Sekadar Minuman
