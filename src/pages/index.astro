@@ -11,167 +11,146 @@ const artikelTerbaru = semuaArtikel
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 3);
 
+// Logika Pengelompokan Kategori E-commerce
+const categories = ["Biji Kopi", "Kopi Bubuk", "Cemilan", "Alat Seduh"];
 // Filter produk baru untuk trigger pop-up
 const produkBaru = varianKopi.find(k => k.isNew);
 ---
 
-<MainLayout title="Lakoffie | Kopi Bubuk Murni Rasa Cafe">
-  
-  <header class="hero">
-    <div class="hero-content">
-      <span class="badge">Bukan Sekadar Kopi Hitam</span>
-      <h1 class="glare-text">Selama Ini Kamu Kira <br/><span>Kopi Cuma Pahit?</span></h1>
-      
-      <div class="marketing-hook">
-        <p class="hero-intro-bold">Upgrade ritual kopimu hari ini.</p>
-        <p class="hero-desc">
-          Rasakan kemewahan 100% biji kopi pilihan dengan aroma gula jawa dan sensasi asam elegan. 
-          <span class="gold-italic">Kualitas Signature Cafe, kini bisa diseduh siapa saja, di mana saja.</span>
-        </p>
-      </div>
+<MainLayout title="Lakoffie | Kopi Bubuk Murni">
 
+<!---Baru -->
+
+<header class="hero">
+  <div class="hero-content">
+    <span class="badge">Kopi Bubuk Murni</span>
+    <h1 class="glare-text">Nikmati Pengalaman Kopi <br/><span>Dari Seduhan Pertama</span></h1>
+    
+    <div class="marketing-hook">
+      <p class="hero-intro-bold">Koleksi biji kopi pilihan dan alat seduh berkualitas.</p>
       <div class="cta-wrapper">
-        <a href="https://wa.me/6285175285640" class="btn-gold">Konsultasi Rasa di WA</a>
+        <a href="#shop-now" class="btn-gold">Mulai Belanja</a>
       </div>
     </div>
-  </header>
+  </div>
+</header>
 
-  <section class="value-bar-luxury">
-    <div class="container-value">
-      <div class="value-item-soft">
-        <div class="value-icon-circle">01</div>
-        <div class="value-info">
-          <h3>Eksplorasi Rasa</h3>
-          <p>Kenapa harus puas dengan satu rasa, jika setiap seduhan bisa menceritakan petualangan yang berbeda?</p>
-        </div>
-      </div>
+<section class="products-ecommerce" id="shop-now">
+  <div class="container">
+    {categories.map((cat) => {
+      // Filter produk berdasarkan kategori saat ini
+      const produkKategori = varianKopi.filter(item => item.kategori === cat);
+      
+      // Hanya tampilkan section jika ada produk di kategori tersebut
+      if (produkKategori.length === 0) return null;
 
-      <div class="value-item-soft">
-        <div class="value-icon-circle">02</div>
-        <div class="value-info">
-          <h3>Kemewahan Inklusif</h3>
-          <p>Menikmati kopi kualitas <em>specialty</em> bukan lagi soal gengsi, tapi soal hak lidahmu untuk dimanja setiap pagi.</p>
-        </div>
-      </div>
-
-      <div class="value-item-soft">
-        <div class="value-icon-circle">03</div>
-        <div class="value-info">
-          <h3>Kejujuran Alam</h3>
-          <p>Saat yang lain berkompromi dengan campuran, kami memilih tetap setia pada kemurnian biji kopi pilihan.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="sensory-experience">
-    <div class="container">
-      <h2>Catatan Rasa yang Akan <span class="gold-text">Anda Temukan</span></h2>
-      <div class="fact-row-premium">
-        <div class="fact-item">
-          <span class="icon">🍫</span>
-          <div class="fact-text">
-            <strong>Aroma Gula Jawa</strong>
-            <p>Manis alami yang menenangkan</p>
+      return (
+        <div class="category-block">
+          <div class="category-header">
+            <h2>{cat}</h2>
+            <div class="line"></div>
           </div>
-        </div>
-        <div class="fact-item">
-          <span class="icon">☕</span>
-          <div class="fact-text">
-            <strong>Bold Body</strong>
-            <p>Tekstur kental yang mantap</p>
-          </div>
-        </div>
-        <div class="fact-item">
-          <span class="icon">🍋</span>
-          <div class="fact-text">
-            <strong>Asam Elegan</strong>
-            <p>Kesegaran buah di setiap sesapan</p>
-          </div>
-        </div>
-      </div>
-      <div class="cta-bottom">
-         <p>Masa nggak pengin ngopi nikmat ala café dengan harga bersahabat?</p>
-         <a href="https://wa.me/6285175285640" class="btn-outline">Lihat Koleksi Kopi</a>
-      </div>
-    </div>
-  </section>
 
-  <section class="products">
-    <div class="section-header">
-      <span class="badge">Selected Beans</span>
-      <h2>Varian Kopi Spesial</h2>
-      <p class="section-desc">Setiap biji bercerita tentang tanah asalnya. Temukan karakter yang paling mewakili <span class="gold-text">identitas lidahmu.</span></p>
-    </div>
-
-    <div class="product-grid">
-      {varianKopi.map((v) => (
-        <div class="product-card">
-          {v.hargaPromo && <div class="promo-ribbon">PROMO</div>}
-          <div class="card-image">
-             <img src={v.image} alt={v.alt} />
-             <div class="pure-badge">100% Pure</div>
-          </div>
-          <div class="card-info">
-            <span class="series-label">Signature Series</span>
-            <h3>{v.nama}</h3>
-            <p class="karakter">{v.karakter}</p>
-            <div class="price-wrapper">
-              {v.hargaPromo ? (
-                <div class="promo-price-stack">
-                  <span class="old-price">{v.harga}</span>
-                  <span class="price-promo">{v.hargaPromo}</span>
+          <div class="product-grid">
+            {produkKategori.map((v) => (
+              <div class="product-card">
+                {v.hargaPromo && <div class="promo-ribbon">PROMO</div>}
+                <div class="card-image">
+                   <img src={v.image} alt={v.alt} loading="lazy" />
+                   <div class="pure-badge">{cat === "Alat Seduh" ? "Original" : "100% Pure"}</div>
                 </div>
-              ) : (
-                <span class="price">{v.harga}</span>
-              )}
-            </div>
-            <div class="product-actions">
-              <a href={`/produk/${v.slug}/`} class="btn-outline">Detail</a>
-              <a href="https://wa.me/6285175285640" class="btn-gold">Beli</a>
-            </div>
+                <div class="card-info">
+                  <span class="series-label">{cat}</span>
+                  <h3>{v.nama}</h3>
+                  <p class="karakter">{v.karakter}</p>
+                  <div class="price-wrapper">
+                    {v.hargaPromo ? (
+                      <div class="promo-price-stack">
+                        <span class="old-price">{v.harga}</span>
+                        <span class="price-promo">{v.hargaPromo}</span>
+                      </div>
+                    ) : (
+                      <span class="price">{v.harga}</span>
+                    )}
+                  </div>
+                  <div class="product-actions">
+                    <a href={`/produk/${v.slug}/`} class="btn-outline">Detail</a>
+                    <a href={`https://wa.me/6285175285640?text=Halo Lakoffie, saya ingin pesan ${v.nama}`} class="btn-gold">Beli</a>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
+      );
+    })}
+  </div>
+</section>
+
+<section class="market">
+  <h3>Dapatkan Secara Online</h3>
+  <div class="market-links">
+    <a href="https://www.shopee.co.id/Lakoffie">Shopee</a>
+    <a href="https://www.tokopedia.com/Lakoffie">Tokopedia</a>
+    <a href="https://www.tiktok.com/@lakoffie_">TikTok Shop</a>
+  </div>
+  <div class="mitra-cta">
+    <p>Ingin merasakan langsung atau ambil di tempat?</p>
+    <a href="/mitra" class="btn-mitra-luxury">Cek Lokasi Mitra 📍</a>
+  </div>
+</section>
+<section class="home-journal">
+  <div class="container">
+    <div class="journal-header">
+      <div>
+        <span class="badge">Journal</span>
+        <h2>Wawasan & <span class="gold-text italic">Inspirasi</span></h2>
+      </div>
+      <a href="/artikel" class="btn-text-gold">Buka Arsip →</a>
+    </div>
+
+    <div class="journal-preview-grid">
+      {artikelTerbaru.map((post) => (
+        <article class="luxury-journal-card">
+          <div class="journal-visual">
+            <img src={post.data.image} alt={post.data.alt} loading="lazy" />
+            <div class="journal-tag-float">{post.data.tags?.[0] || 'Coffee'}</div>
+          </div>
+          <div class="journal-body">
+            <h3>{post.data.title}</h3>
+            <p>{post.data && "description" in post.data 
+    ? (post.data as any).description.substring(0, 95) + "..." 
+    : "Jelajahi wawasan menarik seputar dunia kopi murni Lakoffie selengkapnya di sini."}</p>
+            <div class="journal-footer">
+              <a href={`/artikel/${post.slug || post.id}`} class="link-explore">
+                Jelajahi Cerita
+              </a>
+            </div>
+          </div>
+        </article>
       ))}
     </div>
-  </section>
+  </div>
+</section>
 
-  <section class="home-journal">
-    <div class="container">
-      <div class="journal-header">
-        <div>
-          <span class="badge">Journal</span>
-          <h2>Wawasan & <span class="gold-text italic">Inspirasi</span></h2>
+{produkBaru && (
+  <div id="newProductModal" class="modal-overlay">
+    <div class="modal-content">
+      <button id="closeModal" class="close-btn">&times;</button>
+      <div class="modal-grid">
+        <div class="modal-visual">
+          <img src={produkBaru.image} alt={produkBaru.alt} class="modal-img" />
         </div>
-        <a href="/artikel" class="btn-text-gold">Buka Arsip →</a>
-      </div>
-
-      <div class="journal-preview-grid">
-        {artikelTerbaru.map((post) => (
-          <article class="luxury-journal-card">
-            <div class="journal-visual">
-              <img src={post.data.image} alt={post.data.alt} loading="lazy" />
-              <div class="journal-tag-float">{post.data.tags?.[0] || 'Coffee'}</div>
-            </div>
-            <div class="journal-body">
-              <h3>{post.data.title}</h3>
-              <p>
-                {post.data.description 
-                  ? post.data.description.substring(0, 95) + "..." 
-                  : "Jelajahi wawasan menarik seputar dunia kopi murni Lakoffie selengkapnya di sini."}
-              </p>
-              <div class="journal-footer">
-                <a href={`/artikel/${post.slug || post.id}`} class="link-explore">
-                  Jelajahi Cerita
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                </a>
-              </div>
-            </div>
-          </article>
-        ))}
+        <div class="modal-body">
+          <span class="gold-label">Eksklusif Terbaru</span>
+          <h2>{produkBaru.nama}</h2>
+          <p>{produkBaru.karakter}</p>
+          <a href={`/produk/${produkBaru.slug}`} class="btn-primary-modal">Lihat Detail</a>
+        </div>
       </div>
     </div>
-  </section>
+  </div>
+)}
 
   <section class="testi">
      <h2>Apa Kata Penikmat?</h2>
@@ -182,19 +161,7 @@ const produkBaru = varianKopi.find(k => k.isNew);
      </div>
   </section>
 
-  <section class="market">
-    <h3>Dapatkan Secara Online</h3>
-    <div class="market-links">
-      <a href="https://www.shopee.co.id/Lakoffie">Shopee</a>
-      <a href="https://www.tokopedia.com/Lakoffie">Tokopedia</a>
-      <a href="https://www.tiktok.com/@lakoffie_">TikTok Shop</a>
-    </div>
-    <div class="mitra-cta">
-      <p>Ingin merasakan langsung atau ambil di tempat?</p>
-      <a href="/mitra" class="btn-mitra-luxury">Cek Lokasi Mitra 📍</a>
-    </div>
-  </section>
-
+  
   {produkBaru && (
     <div id="newProductModal" class="modal-overlay">
       <div class="modal-content">
@@ -222,28 +189,6 @@ const produkBaru = varianKopi.find(k => k.isNew);
   )}
 
 </MainLayout>
-
-<style>
-  /* --- Style Tetap Sama --- */
-  .home-journal { padding: 6rem 0; background: #0c0b0a; }
-  .journal-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3.5rem; }
-  .journal-preview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; }
-  .luxury-journal-card { background: #141311; border-radius: 20px; overflow: hidden; border: 1px solid rgba(191, 149, 63, 0.15); transition: all 0.4s ease; }
-  .luxury-journal-card:hover { transform: translateY(-10px); border-color: rgba(191, 149, 63, 0.5); box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
-  .journal-visual { height: 220px; position: relative; overflow: hidden; }
-  .journal-visual img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7); transition: 0.5s; }
-  .luxury-journal-card:hover .journal-visual img { filter: brightness(1); transform: scale(1.05); }
-  .journal-tag-float { position: absolute; bottom: 15px; left: 15px; background: var(--gold); color: #000; font-size: 0.65rem; font-weight: bold; padding: 4px 12px; border-radius: 4px; text-transform: uppercase; }
-  .journal-body { padding: 2rem; }
-  .journal-body h3 { color: #fff; font-family: serif; font-size: 1.4rem; margin-bottom: 1rem; line-height: 1.3; }
-  .journal-body p { color: #888; font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.5rem; height: 3.2em; overflow: hidden; }
-  .journal-footer { border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1.5rem; }
-  .link-explore { color: var(--gold); text-decoration: none; font-weight: bold; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
-  .link-explore:hover { gap: 15px; }
-  .btn-text-gold { color: var(--gold); text-decoration: none; font-weight: bold; border-bottom: 1px solid transparent; transition: 0.3s; }
-  .btn-text-gold:hover { border-color: var(--gold); }
-  @media (max-width: 768px) { .journal-header { flex-direction: column; align-items: flex-start; gap: 1rem; } }
-</style>
 
 <script is:inline>
   window.addEventListener('load', () => {
